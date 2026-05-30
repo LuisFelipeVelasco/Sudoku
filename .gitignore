@@ -1,0 +1,20 @@
+# ==========================================
+# 1. Archivos compilados y empaquetados (Maven)
+# ==========================================
+target/
+*.class
+*.jar
+*.war
+
+# ==========================================
+# 2. Archivos de configuración de IntelliJ IDEA
+# ==========================================
+.idea/
+*.iml
+*.iws
+
+# ==========================================
+# 3. Archivos del sistema operativo (Opcional pero recomendado)
+# ==========================================
+.DS_Store
+Thumbs.db
