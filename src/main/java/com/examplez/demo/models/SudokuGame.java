@@ -5,6 +5,7 @@ import java.util.Collections;
 
 public class SudokuGame {
 
+
     //Attributes
     private final int size = 6;
 
@@ -119,5 +120,12 @@ public class SudokuGame {
         }
         System.out.println("---------------------\n");
     }
+    public ArrayList<ArrayList<Integer>> getBoard() {
+        return matrix;
+    }
+    public int getValue(int row, int col) {
+        return matrix.get(row).get(col);
+    }
+
 }
 
