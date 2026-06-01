@@ -302,7 +302,7 @@
             <Font size="24.0" />
          </font>
       </TextField>
-      <Button layoutX="85.0" layoutY="469.0" mnemonicParsing="false" onAction="#onButtonPlay" prefHeight="50.0" prefWidth="383.0" text="JUGAR">
+      <Button fx:id="jugarID" layoutX="85.0" layoutY="469.0" mnemonicParsing="false" onAction="#onButtonPlay" prefHeight="50.0" prefWidth="383.0" text="JUGAR">
          <font>
             <Font name="Marlett" size="21.0" />
          </font>
@@ -310,5 +310,6 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </Button>
+      <Button fx:id="finishID" layoutX="85.0" layoutY="430.0" mnemonicParsing="false" onAction="#onButtonPlays" prefHeight="40.0" prefWidth="377.0" text="Finalizar" visible="false" />
    </children>
 </Pane>

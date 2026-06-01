@@ -1,6 +1,7 @@
 package com.examplez.demo.controllers;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import com.examplez.demo.models.SudokuGame;
 import javafx.scene.control.TextField;
@@ -46,6 +47,8 @@ public class MainMenuController {
     @FXML private TextField T53;
     @FXML private TextField T54;
     @FXML private TextField T55;
+    @FXML private Button finishID;
+    @FXML private Button jugarID;
     private TextField[][] blocks = new TextField[6][6];
     public void initialize(){
         blocks[0][0]=T00;
@@ -107,9 +110,14 @@ public class MainMenuController {
 
         boolean[][] show=showClues();
         showBoard(show);
+        finishID.setVisible(true);
+        jugarID.setVisible(false);
 
 
 
+    }
+    @FXML protected void onButtonPlays(){
+        verification();
     }
 
 
@@ -181,5 +189,27 @@ return false;
         }
 
     return counter;}
+    private void verification(){
+
+        for(int row=0;row<6;row ++){
+            for (int col=0;col<6;col++ ){
+                TextField tf= blocks[row][col];
+                String text=tf.getText().trim();
+                try {
+                    int value= Integer.parseInt(text);
+                    if (value<1||value>6 ){
+                        tf.setStyle("-fx-background-color: rgba(106,19,19,0.95);");
+                    }else {
+                        tf.setStyle("");
+
+                    }
+                }catch(NumberFormatException e){
+                    tf.setStyle("-fx-background-color: rgba(106,19,19,0.95);");
+
+                }
+            }
+        }
+
+    }
 }
 
