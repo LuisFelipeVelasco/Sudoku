@@ -95,6 +95,10 @@ public class MainMenuController {
 
 
     SudokuGame modelSudoku= new SudokuGame();
+    //@FXML protected void onMouseClicked(){
+
+    //};
+
     @FXML
     protected void onButtonPlay() {
         modelSudoku.fillFullBoard();
@@ -127,7 +131,7 @@ public class MainMenuController {
                 }else{
 
                     blocks[row][col].setText("");
-
+                    blocks[row][col].setDisable(false);
                 }
             }
         }
