@@ -47,8 +47,8 @@ public class MainMenuController {
     @FXML private TextField T53;
     @FXML private TextField T54;
     @FXML private TextField T55;
-    @FXML private Button finishID;
-    @FXML private Button jugarID;
+    @FXML private Button clueID;
+    @FXML private Button playID;
     private TextField[][] blocks = new TextField[6][6];
     public void initialize(){
         blocks[0][0]=T00;
@@ -98,6 +98,7 @@ public class MainMenuController {
 
 
     SudokuGame modelSudoku= new SudokuGame();
+    boolean[][] stateCells;
     //@FXML protected void onMouseClicked(){
 
     //};
@@ -108,16 +109,16 @@ public class MainMenuController {
 
         modelSudoku.printBoard();
 
-        boolean[][] show=showClues();
-        showBoard(show);
-        finishID.setVisible(true);
-        jugarID.setVisible(false);
+        stateCells=showClues();
+        showBoard(stateCells);
+        clueID.setVisible(true);
+        playID.setVisible(false);
 
 
 
     }
-    @FXML protected void onButtonPlays(){
-        verification();
+    @FXML protected void onButtonClue(){
+        giveClue(stateCells);
     }
 
 
@@ -189,25 +190,27 @@ return false;
         }
 
     return counter;}
-    private void verification(){
+    private void giveClue(boolean[][] show){
+        boolean find=true;
+        for(int row = 0; row < 6; row++) {
 
-        for(int row=0;row<6;row ++){
-            for (int col=0;col<6;col++ ){
-                TextField tf= blocks[row][col];
-                String text=tf.getText().trim();
-                try {
-                    int value= Integer.parseInt(text);
-                    if (value<1||value>6 ){
-                        tf.setStyle("-fx-background-color: rgba(106,19,19,0.95);");
-                    }else {
-                        tf.setStyle("");
+            for (int col = 0; col < 6; col++) {
+                //If the value of the cell hasn't been shown , then show it
+                if (!show[row][col]) {
 
-                    }
-                }catch(NumberFormatException e){
-                    tf.setStyle("-fx-background-color: rgba(106,19,19,0.95);");
+                    blocks[row][col].setText(
+                            String.valueOf(
+                                    modelSudoku.getValue(row, col)
+                            ));
+                    //Set it like show it
+                    show[row][col]=true;
+                    find=false;
+                    break;
 
                 }
+
             }
+            if(!find){break;}
         }
 
     }
