@@ -1,7 +1,10 @@
 package com.examplez.demo.models;
+import javafx.scene.control.TextField;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SudokuGame {
@@ -180,5 +183,59 @@ public class SudokuGame {
         }
         return counter;}
 
+    /*
+Method that iterate the boolean matrix to find a false cell and show it in the board
+Then, sets the cell as true to avoid show it again and disable its cell in the board
+ */
+    public boolean[][] giveClue(boolean[][] matrixBools,TextField[][] blocks){
+        boolean find=false;
+        for(int row = 0; row < 6; row++) {
+            for (int col = 0; col < 6; col++) {
+                //If the value of the cell hasn't been shown , then show it
+                if (!matrixBools[row][col] && Objects.equals(blocks[row][col].getText(), "")) {
+                    //Set it like show it
+                    matrixBools[row][col]=true;
+                    find=true;
+                    break;
+                }
+            }
+            if(find){break;}
+        }
+        return matrixBools;
+
+    }
+
+        /*
+    Verify if the string received is a number between 1 and 6
+    */
+    public boolean isNumberOneToSix(String user_input){
+        return user_input.matches("[1-6]");
+    }
+
+    /*
+        Iterate all the blocks in the same column and verify if its value is equal to the value of the current block
+        excluding itself,in that case return true;
+    */
+    public boolean sameNumberInSameColumn(String user_input,int column,int row,TextField[][] blocks) {
+        for (int i = 0; i <= 5; i++) {
+            String value_block = blocks[i][column].getText();
+            if (value_block.equals(user_input) && i!=row) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+    public boolean sameNumberInSameRow(String user_input,int column,int row,TextField[][] blocks) {
+        for (int i = 0; i <= 5; i++) {
+            String value_block = blocks[row][i].getText();
+            if (value_block.equals(user_input) && i!=column) {
+                return true;
+            }
+        }
+        return false;
+
+    }
 }
 

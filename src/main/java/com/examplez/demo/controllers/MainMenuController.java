@@ -52,6 +52,7 @@ public class MainMenuController {
     @FXML private TextField T55;
     @FXML private Button clueID;
     @FXML private Button playID;
+    @FXML private Label labelText;
     private TextField[][] blocks = new TextField[6][6];
     public void initialize(){
         blocks[0][0]=T00;
@@ -106,7 +107,9 @@ public class MainMenuController {
         playID.setVisible(false);
     }
     @FXML protected void onButtonClue(){
-        giveClue(stateCells);
+        stateCells= modelSudoku.giveClue(stateCells,blocks);
+        showBoard(stateCells);
+
     }
 
 
@@ -114,44 +117,36 @@ public class MainMenuController {
     private void showBoard(boolean[][] show){
         for(int row = 0; row < 6; row++){
             for(int col = 0; col < 6; col++){
-                if(show[row][col]){
+                if(matrix[row][col]){
                     blocks[row][col].setText(
-                            String.valueOf(
-                                    modelSudoku.getValue(row,col)
-                            )
-                    );
-                }else{
-                    blocks[row][col].setText("");
+                            String.valueOf(modelSudoku.getValue(row,col)));
+                    blocks[row][col].setDisable(true);
+
+                }
+                else{
                     blocks[row][col].setDisable(false);
                 }
             }
         }
     }
 
+    private void setListenerToTextFields() {
+        initialize();
+        for(int row = 0; row < 6; row++){
+            for(int col = 0; col < 6; col++){
+                TextField textField=blocks[row][col];
+                textField.textProperty(). addListener((observable, oldValue, newValue) -> {
+                    verification(newValue,textField);
 
-/*
-Method that iterate the boolean matrix to find a false cell and show it in the board
-Then, sets the cell as true to avoid show it again and disable its cell in the board
- */
-    private void giveClue(boolean[][] matrix){
-        boolean find=false;
-        for(int row = 0; row < 6; row++) {
-
-            for (int col = 0; col < 6; col++) {
-                //If the value of the cell hasn't been shown , then show it
-                if (!matrix[row][col]) {
-                    blocks[row][col].setText(
-                            String.valueOf(
-                                    modelSudoku.getValue(row, col)
-                            ));
-                    //Set it like show it
-                    matrix[row][col]=true;
-                    blocks[row][col].setDisable(true);
-                    find=true;
-                    break;
-                }
+                });
             }
-            if(find){break;}
+        }
+    }
+    private void verification(String user_input , TextField textField){
+        if(modelSudoku.isNumberOneToSix(user_input)==false) {
+            labelText.setText("Type a number 1-6");
+            labelText.setStyle(labelText.getStyle() + "-fx-text-fill: red;");
+            textField.setText("");
         }
 
     }

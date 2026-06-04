@@ -310,7 +310,7 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </Button>
-      <Button fx:id="clueID" layoutX="85.0" layoutY="469.0" mnemonicParsing="false" onAction="#onButtonClue" prefHeight="50.0" prefWidth="383.0" text="Pista" visible="false" >
+      <Button fx:id="clueID" layoutX="85.0" layoutY="469.0" mnemonicParsing="false" onAction="#onButtonClue" prefHeight="50.0" prefWidth="383.0" text="Pista" visible="false">
          <font>
             <Font name="Marlett" size="21.0" />
          </font>
@@ -318,5 +318,10 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </Button>
+      <Label fx:id="labelText" alignment="CENTER" layoutX="85.0" layoutY="422.0" prefHeight="27.0" prefWidth="383.0">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
    </children>
 </Pane>
