@@ -2,6 +2,7 @@ package com.examplez.demo.models;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class SudokuGame {
 
@@ -126,6 +127,58 @@ public class SudokuGame {
     public int getValue(int row, int col) {
         return matrix.get(row).get(col);
     }
+
+        /*
+    Method that creates a mini matrix which will save the numbers we will show, it starts with the rows
+    select a random number in each row, then it goes with each column, if there is a number revealed in that column it skips it
+    then it does the same then before ,and lastly it verifies there is two numbers per row, one per column and two per subBlock
+    */
+    public boolean[][] chooseCluesToShow(){
+        boolean[][] show = new boolean[6][6];
+        for (int Row=0;Row<6;Row++){
+            int Col= ThreadLocalRandom.current().nextInt(0,6);
+            show[Row][Col]= true;
+
+        }
+        for (int Col=0;Col<6;Col++){
+            if(!numberOnCol(show,Col)){
+                int Row=ThreadLocalRandom.current().nextInt(0,6);
+                show[Row][Col]= true;
+            }
+
+        }// It verify  there is at least one number revealed per row. col and two per subBlock, if its valid the mini matrix its true if not it put a random number in the required row or column
+        for (int RowStart=0;RowStart<6;RowStart+=2){
+            for (int ColStart=0;ColStart<6;ColStart+=3){
+                while(countSubBlock(show,RowStart,ColStart)!=2){
+                    int Row= RowStart+ThreadLocalRandom.current().nextInt(2);
+                    int Col= ColStart+ThreadLocalRandom.current().nextInt(3);
+                    show[Row][Col]=true;
+                }
+            }
+        }
+        return show;}
+
+    //it counts if there is already a number in the column
+    private boolean numberOnCol(boolean[][] show, int Col){
+        for (int Row=0;Row<6;Row++){
+            if (show[Row][Col]){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //it counts if there is atleast two numbers per subBlock
+    private int countSubBlock(boolean[][] show,int RowStart,int ColStart){
+        int counter=0;
+        for (int i=  RowStart;i<RowStart+2;i++){
+            for (int j= ColStart;j<ColStart+3;j++){
+                if (show[i][j]){
+                    counter++;
+                }
+            }
+        }
+        return counter;}
 
 }
 

@@ -5,9 +5,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import com.examplez.demo.models.SudokuGame;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 import java.util.ArrayList;
+
 
 
 public class MainMenuController {
@@ -87,35 +90,20 @@ public class MainMenuController {
         blocks[5][3]=T53;
         blocks[5][4]=T54;
         blocks[5][5]=T55;
-
-
-
-
-
     }
-    //library used to generate a random number between 1 and 6
-   // int numRow=ThreadLocalRandom.current().nextInt(1,7);
-
 
     SudokuGame modelSudoku= new SudokuGame();
     boolean[][] stateCells;
-    //@FXML protected void onMouseClicked(){
-
-    //};
 
     @FXML
     protected void onButtonPlay() {
         modelSudoku.fillFullBoard();
-
         modelSudoku.printBoard();
-
-        stateCells=showClues();
+        stateCells=modelSudoku.chooseCluesToShow();
         showBoard(stateCells);
+        setListenerToTextFields();
         clueID.setVisible(true);
         playID.setVisible(false);
-
-
-
     }
     @FXML protected void onButtonClue(){
         giveClue(stateCells);
@@ -124,93 +112,46 @@ public class MainMenuController {
 
 
     private void showBoard(boolean[][] show){
-
         for(int row = 0; row < 6; row++){
-
             for(int col = 0; col < 6; col++){
-
                 if(show[row][col]){
-
                     blocks[row][col].setText(
                             String.valueOf(
                                     modelSudoku.getValue(row,col)
                             )
                     );
-
                 }else{
-
                     blocks[row][col].setText("");
                     blocks[row][col].setDisable(false);
                 }
             }
         }
     }
-    private boolean[][] showClues(){
-        boolean[][] show = new boolean[6][6];
-        for (int Row=0;Row<6;Row++){
-            int Col=ThreadLocalRandom.current().nextInt(0,6);
-            show[Row][Col]= true;
 
-    }
-        for (int Col=0;Col<6;Col++){
-            if(!numberOnCol(show,Col)){
 
-                    int Row=ThreadLocalRandom.current().nextInt(0,6);
-                    show[Row][Col]= true;
-
-            }
-    }
-        for (int RowStart=0;RowStart<6;RowStart+=2){
-            for (int ColStart=0;ColStart<6;ColStart+=3){
-                while(countSubBlock(show,RowStart,ColStart)<2){
-                    int Row= RowStart+ThreadLocalRandom.current().nextInt(2);
-                    int Col= ColStart+ThreadLocalRandom.current().nextInt(3);
-                    show[Row][Col]=true;
-                }
-            }
-        }
-    return show;}
-    private boolean numberOnCol(boolean[][] show, int Col){
-        for (int Row=0;Row<6;Row++){
-            if (show[Row][Col]){
-                return true;
-            }
-        }
-return false;
-    }
-    private int countSubBlock(boolean[][] show,int RowStart,int ColStart){
-        int counter=0;
-        for (int i=  RowStart;i<RowStart+2;i++){
-            for (int j= ColStart;j<ColStart+3;j++){
-                if (show[i][j]){
-                    counter++;
-                }
-            }
-
-        }
-
-    return counter;}
-    private void giveClue(boolean[][] show){
-        boolean find=true;
+/*
+Method that iterate the boolean matrix to find a false cell and show it in the board
+Then, sets the cell as true to avoid show it again and disable its cell in the board
+ */
+    private void giveClue(boolean[][] matrix){
+        boolean find=false;
         for(int row = 0; row < 6; row++) {
 
             for (int col = 0; col < 6; col++) {
                 //If the value of the cell hasn't been shown , then show it
-                if (!show[row][col]) {
-
+                if (!matrix[row][col]) {
                     blocks[row][col].setText(
                             String.valueOf(
                                     modelSudoku.getValue(row, col)
                             ));
                     //Set it like show it
-                    show[row][col]=true;
-                    find=false;
+                    matrix[row][col]=true;
+                    blocks[row][col].setDisable(true);
+                    find=true;
                     break;
-
                 }
-
             }
-            if(!find){break;}
+            if(find){break;}
         }
 
     }
