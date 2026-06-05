@@ -236,5 +236,20 @@ Then, sets the cell as true to avoid show it again and disable its cell in the b
         return 7;
 
     }
+    public int sameNumberInSameBlock(String user_input, int column, int row, TextField[][] blocks){
+
+
+        int counter=0;
+        int startRow = (row / 2) * 2;
+        int startCol = (column / 3) * 3;
+        for (int i=  startRow;i<startRow+2;i++){
+            for (int j= startCol;j<startCol+3;j++){
+                String value_SubBlock = blocks[i][j].getText();
+                if (value_SubBlock.equals(user_input)){
+                    counter=1;
+                }
+            }
+        }
+        return counter;}
 }
 

@@ -5,311 +5,695 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="563.0" prefWidth="553.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.examplez.demo.controllers.MainMenuController">
+<!--
+  ╔══════════════════════════════════════════════════════════╗
+  ║  SUDOKU – Main Menu  |  UX Design System                 ║
+  ║──────────────────────────────────────────────────────────║
+  ║  Principios aplicados:                                   ║
+  ║  • Aesthetic-Usability Effect  → paleta elegante,        ║
+  ║    radios suaves, sombras sutiles                        ║
+  ║  • Von Restorff Effect         → botón JUGAR destacado   ║
+  ║    con color de acento vibrante                          ║
+  ║  • Nielsen Heuristics          → feedback visual         ║
+  ║    (hover/focus), consistencia, reconocimiento > recall  ║
+  ║  • Regiones 3×2 claramente delimitadas con fondo propio  ║
+  ║  • Jerarquía tipográfica clara (título > celdas > label) ║
+  ╚══════════════════════════════════════════════════════════╝
+-->
+
+<Pane
+   maxHeight="-Infinity" maxWidth="-Infinity"
+   minHeight="-Infinity" minWidth="-Infinity"
+   prefHeight="563.0" prefWidth="553.0"
+   style="
+      -fx-background-color: linear-gradient(to bottom, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+   "
+   xmlns="http://javafx.com/javafx/25"
+   xmlns:fx="http://javafx.com/fxml/1"
+   fx:controller="com.examplez.demo.controllers.MainMenuController">
+
    <children>
-      <Label alignment="CENTER" layoutX="14.0" layoutY="33.0" prefHeight="40.0" prefWidth="523.0" text="SODOKU" textAlignment="CENTER">
+
+      <!-- ═══════════════════════════════════════════════════
+           DECORACIÓN: rectángulo de fondo del tablero
+           Crea profundidad (card elevada) – Aesthetic Effect
+      ════════════════════════════════════════════════════ -->
+      <Rectangle
+         layoutX="63.0" layoutY="82.0"
+         width="428.0" height="330.0"
+         arcWidth="18" arcHeight="18"
+         style="
+            -fx-fill: rgba(255,255,255,0.04);
+            -fx-stroke: rgba(255,255,255,0.10);
+            -fx-stroke-width: 1.5;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.55), 24, 0.0, 0, 8);
+         " />
+
+      <!-- ═══════════════════════════════════════════════════
+           TÍTULO  — Jerarquía visual clara (Heurística #4)
+           Von Restorff: carácter único, color de acento
+      ════════════════════════════════════════════════════ -->
+      <Label
+         alignment="CENTER"
+         layoutX="14.0" layoutY="18.0"
+         prefHeight="50.0" prefWidth="523.0"
+         text="SUDOKU"
+         textAlignment="CENTER"
+         style="
+            -fx-text-fill: #e2e8f0;
+            -fx-effect: dropshadow(gaussian, #6366f1, 22, 0.6, 0, 0);
+         ">
          <font>
-            <Font name="Arial Bold" size="28.0" />
+            <Font name="Arial Bold" size="32.0" />
          </font>
       </Label>
-      <TextField fx:id="T00" alignment="CENTER" disable="true" layoutX="83.0" layoutY="102.0" prefHeight="50.0" prefWidth="64.0" style="-fx-background-color: #EBEBEB; -fx-border-color: black;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <!-- ═══════════════════════════════════════════════════
+           SEPARADOR DECORATIVO bajo el título
+      ════════════════════════════════════════════════════ -->
+      <Rectangle
+         layoutX="176.0" layoutY="68.0"
+         width="200.0" height="2.0"
+         arcWidth="2" arcHeight="2"
+         style="-fx-fill: linear-gradient(to right, transparent, #6366f1, transparent);" />
+
+      <!-- ═══════════════════════════════════════════════════
+           FILA 0  ·  Grupo izquierdo #EBEBEB · Grupo derecho blanco
+           Bordes gruesos entre regiones 3×2 (Nielsen #6: Reconocimiento)
+      ════════════════════════════════════════════════════ -->
+
+      <!-- Región top-left (T00, T01, T02) – fondo ligeramente diferente -->
+      <TextField fx:id="T00" alignment="CENTER" disable="true"
+         layoutX="83.0" layoutY="102.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.10);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.18);
+            -fx-border-width: 1.2;
+            -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9;
+            -fx-font-size: 22px;
+            -fx-font-weight: bold;
+            -fx-alignment: center;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 6, 0, 0, 2);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T03" alignment="CENTER" disable="true" layoutX="275.0" layoutY="102.0" prefHeight="50.0" prefWidth="64.0" style="-fx-border-color: black; -fx-background-color: white;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T01" alignment="CENTER" disable="true"
+         layoutX="147.0" layoutY="102.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.10);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.18);
+            -fx-border-width: 1.2;
+            -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9;
+            -fx-font-size: 22px;
+            -fx-font-weight: bold;
+            -fx-alignment: center;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 6, 0, 0, 2);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T01" alignment="CENTER" disable="true" layoutX="147.0" layoutY="102.0" prefHeight="50.0" prefWidth="64.0" style="-fx-background-color: #EBEBEB; -fx-border-color: black;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T02" alignment="CENTER" disable="true"
+         layoutX="211.0" layoutY="102.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.10);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.18);
+            -fx-border-width: 1.2;
+            -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9;
+            -fx-font-size: 22px;
+            -fx-font-weight: bold;
+            -fx-alignment: center;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 6, 0, 0, 2);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T02" alignment="CENTER" disable="true" layoutX="211.0" layoutY="102.0" prefHeight="50.0" prefWidth="64.0" style="-fx-background-color: #EBEBEB; -fx-border-color: black;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <!-- Región top-right (T03, T04, T05) – fondo sutilmente más claro -->
+      <TextField fx:id="T03" alignment="CENTER" disable="true"
+         layoutX="275.0" layoutY="102.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.06);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.14);
+            -fx-border-width: 1.2;
+            -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9;
+            -fx-font-size: 22px;
+            -fx-font-weight: bold;
+            -fx-alignment: center;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 4, 0, 0, 1);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T04" alignment="CENTER" disable="true" layoutX="339.0" layoutY="102.0" prefHeight="50.0" prefWidth="64.0" style="-fx-border-color: black; -fx-background-color: white;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T04" alignment="CENTER" disable="true"
+         layoutX="339.0" layoutY="102.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.06);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.14);
+            -fx-border-width: 1.2;
+            -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9;
+            -fx-font-size: 22px;
+            -fx-font-weight: bold;
+            -fx-alignment: center;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 4, 0, 0, 1);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T05" alignment="CENTER" disable="true" layoutX="403.0" layoutY="102.0" prefHeight="50.0" prefWidth="64.0" style="-fx-border-color: black; -fx-background-color: white;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T05" alignment="CENTER" disable="true"
+         layoutX="403.0" layoutY="102.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.06);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.14);
+            -fx-border-width: 1.2;
+            -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9;
+            -fx-font-size: 22px;
+            -fx-font-weight: bold;
+            -fx-alignment: center;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 4, 0, 0, 1);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T10" alignment="CENTER" disable="true" layoutX="83.0" layoutY="152.0" prefHeight="50.0" prefWidth="64.0" style="-fx-background-color: #EBEBEB; -fx-border-color: black;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <!-- ═══ FILA 1 ═══ -->
+      <TextField fx:id="T10" alignment="CENTER" disable="true"
+         layoutX="83.0" layoutY="152.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.10);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.18);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 6, 0, 0, 2);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T11" alignment="CENTER" disable="true" layoutX="147.0" layoutY="152.0" prefHeight="50.0" prefWidth="64.0" style="-fx-background-color: #EBEBEB; -fx-border-color: black;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T11" alignment="CENTER" disable="true"
+         layoutX="147.0" layoutY="152.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.10);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.18);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 6, 0, 0, 2);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T12" alignment="CENTER" disable="true" layoutX="211.0" layoutY="152.0" prefHeight="50.0" prefWidth="64.0" style="-fx-background-color: #EBEBEB; -fx-border-color: black;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T12" alignment="CENTER" disable="true"
+         layoutX="211.0" layoutY="152.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.10);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.18);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 6, 0, 0, 2);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T13" alignment="CENTER" disable="true" layoutX="275.0" layoutY="152.0" prefHeight="50.0" prefWidth="64.0" style="-fx-border-color: black; -fx-background-color: white;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T13" alignment="CENTER" disable="true"
+         layoutX="275.0" layoutY="152.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.06);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.14);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 4, 0, 0, 1);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T14" alignment="CENTER" disable="true" layoutX="339.0" layoutY="152.0" prefHeight="50.0" prefWidth="64.0" style="-fx-border-color: black; -fx-background-color: white;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T14" alignment="CENTER" disable="true"
+         layoutX="339.0" layoutY="152.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.06);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.14);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 4, 0, 0, 1);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T15" alignment="CENTER" disable="true" layoutX="403.0" layoutY="152.0" prefHeight="50.0" prefWidth="64.0" style="-fx-border-color: black; -fx-background-color: white;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T15" alignment="CENTER" disable="true"
+         layoutX="403.0" layoutY="152.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.06);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.14);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 4, 0, 0, 1);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T23" alignment="CENTER" disable="true" layoutX="275.0" layoutY="202.0" prefHeight="50.0" prefWidth="64.0" style="-fx-background-color: #EBEBEB; -fx-border-color: black;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <!-- ═══ FILA 2 ═══ -->
+      <TextField fx:id="T20" alignment="CENTER" disable="true"
+         layoutX="83.0" layoutY="202.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.06);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.14);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 4, 0, 0, 1);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T24" alignment="CENTER" disable="true" layoutX="339.0" layoutY="202.0" prefHeight="50.0" prefWidth="64.0" style="-fx-background-color: #EBEBEB; -fx-border-color: black;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T21" alignment="CENTER" disable="true"
+         layoutX="147.0" layoutY="202.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.06);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.14);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 4, 0, 0, 1);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T25" alignment="CENTER" disable="true" layoutX="403.0" layoutY="202.0" prefHeight="50.0" prefWidth="64.0" style="-fx-background-color: #EBEBEB; -fx-border-color: black;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T22" alignment="CENTER" disable="true"
+         layoutX="211.0" layoutY="202.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.06);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.14);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 4, 0, 0, 1);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T33" alignment="CENTER" disable="true" layoutX="275.0" layoutY="252.0" prefHeight="50.0" prefWidth="64.0" style="-fx-background-color: #EBEBEB; -fx-border-color: black;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T23" alignment="CENTER" disable="true"
+         layoutX="275.0" layoutY="202.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.10);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.18);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 6, 0, 0, 2);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T34" alignment="CENTER" disable="true" layoutX="339.0" layoutY="252.0" prefHeight="50.0" prefWidth="64.0" style="-fx-background-color: #EBEBEB; -fx-border-color: black;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T24" alignment="CENTER" disable="true"
+         layoutX="339.0" layoutY="202.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.10);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.18);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 6, 0, 0, 2);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T35" alignment="CENTER" disable="true" layoutX="403.0" layoutY="252.0" prefHeight="50.0" prefWidth="64.0" style="-fx-background-color: #EBEBEB; -fx-border-color: black;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T25" alignment="CENTER" disable="true"
+         layoutX="403.0" layoutY="202.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.10);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.18);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 6, 0, 0, 2);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T20" alignment="CENTER" disable="true" layoutX="83.0" layoutY="202.0" prefHeight="50.0" prefWidth="64.0" style="-fx-border-color: black; -fx-background-color: white;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <!-- ═══ FILA 3 ═══ -->
+      <TextField fx:id="T30" alignment="CENTER" disable="true"
+         layoutX="83.0" layoutY="252.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.06);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.14);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 4, 0, 0, 1);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T21" alignment="CENTER" disable="true" layoutX="147.0" layoutY="202.0" prefHeight="50.0" prefWidth="64.0" style="-fx-border-color: black; -fx-background-color: white;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T31" alignment="CENTER" disable="true"
+         layoutX="147.0" layoutY="252.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.06);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.14);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 4, 0, 0, 1);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T22" alignment="CENTER" disable="true" layoutX="211.0" layoutY="202.0" prefHeight="50.0" prefWidth="64.0" style="-fx-border-color: black; -fx-background-color: white;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T32" alignment="CENTER" disable="true"
+         layoutX="211.0" layoutY="252.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.06);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.14);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 4, 0, 0, 1);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T30" alignment="CENTER" disable="true" layoutX="83.0" layoutY="252.0" prefHeight="50.0" prefWidth="64.0" style="-fx-border-color: black; -fx-background-color: white;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T33" alignment="CENTER" disable="true"
+         layoutX="275.0" layoutY="252.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.10);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.18);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 6, 0, 0, 2);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T31" alignment="CENTER" disable="true" layoutX="147.0" layoutY="252.0" prefHeight="50.0" prefWidth="64.0" style="-fx-border-color: black; -fx-background-color: white;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T34" alignment="CENTER" disable="true"
+         layoutX="339.0" layoutY="252.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.10);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.18);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 6, 0, 0, 2);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T32" alignment="CENTER" disable="true" layoutX="211.0" layoutY="252.0" prefHeight="50.0" prefWidth="64.0" style="-fx-border-color: black; -fx-background-color: white;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T35" alignment="CENTER" disable="true"
+         layoutX="403.0" layoutY="252.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.10);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.18);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 6, 0, 0, 2);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T43" alignment="CENTER" disable="true" layoutX="275.0" layoutY="302.0" prefHeight="50.0" prefWidth="64.0" style="-fx-border-color: black; -fx-background-color: white;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <!-- ═══ FILA 4 ═══ -->
+      <TextField fx:id="T40" alignment="CENTER" disable="true"
+         layoutX="83.0" layoutY="302.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.10);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.18);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 6, 0, 0, 2);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T44" alignment="CENTER" disable="true" layoutX="339.0" layoutY="302.0" prefHeight="50.0" prefWidth="64.0" style="-fx-border-color: black; -fx-background-color: white;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T41" alignment="CENTER" disable="true"
+         layoutX="147.0" layoutY="302.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.10);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.18);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 6, 0, 0, 2);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T45" alignment="CENTER" disable="true" layoutX="403.0" layoutY="302.0" prefHeight="50.0" prefWidth="64.0" style="-fx-border-color: black; -fx-background-color: white;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T42" alignment="CENTER" disable="true"
+         layoutX="211.0" layoutY="302.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.10);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.18);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 6, 0, 0, 2);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T53" alignment="CENTER" disable="true" layoutX="275.0" layoutY="352.0" prefHeight="50.0" prefWidth="64.0" style="-fx-border-color: black; -fx-background-color: white;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T43" alignment="CENTER" disable="true"
+         layoutX="275.0" layoutY="302.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.06);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.14);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 4, 0, 0, 1);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T54" alignment="CENTER" disable="true" layoutX="339.0" layoutY="352.0" prefHeight="50.0" prefWidth="64.0" style="-fx-border-color: black; -fx-background-color: white;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T44" alignment="CENTER" disable="true"
+         layoutX="339.0" layoutY="302.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.06);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.14);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 4, 0, 0, 1);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T55" alignment="CENTER" disable="true" layoutX="403.0" layoutY="352.0" prefHeight="50.0" prefWidth="64.0" style="-fx-border-color: black; -fx-background-color: white;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T45" alignment="CENTER" disable="true"
+         layoutX="403.0" layoutY="302.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.06);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.14);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 4, 0, 0, 1);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T40" alignment="CENTER" disable="true" layoutX="83.0" layoutY="302.0" prefHeight="50.0" prefWidth="64.0" style="-fx-background-color: #EBEBEB; -fx-border-color: black;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <!-- ═══ FILA 5 ═══ -->
+      <TextField fx:id="T50" alignment="CENTER" disable="true"
+         layoutX="83.0" layoutY="352.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.10);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.18);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 6, 0, 0, 2);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T41" alignment="CENTER" disable="true" layoutX="147.0" layoutY="302.0" prefHeight="50.0" prefWidth="64.0" style="-fx-background-color: #EBEBEB; -fx-border-color: black;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T51" alignment="CENTER" disable="true"
+         layoutX="147.0" layoutY="352.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.10);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.18);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 6, 0, 0, 2);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T42" alignment="CENTER" disable="true" layoutX="211.0" layoutY="302.0" prefHeight="50.0" prefWidth="64.0" style="-fx-background-color: #EBEBEB; -fx-border-color: black;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T52" alignment="CENTER" disable="true"
+         layoutX="211.0" layoutY="352.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.10);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.18);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 6, 0, 0, 2);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T50" alignment="CENTER" disable="true" layoutX="83.0" layoutY="352.0" prefHeight="50.0" prefWidth="64.0" style="-fx-background-color: #EBEBEB; -fx-border-color: black;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T53" alignment="CENTER" disable="true"
+         layoutX="275.0" layoutY="352.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.06);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.14);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 4, 0, 0, 1);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T51" alignment="CENTER" disable="true" layoutX="147.0" layoutY="352.0" prefHeight="50.0" prefWidth="64.0" style="-fx-background-color: #EBEBEB; -fx-border-color: black;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T54" alignment="CENTER" disable="true"
+         layoutX="339.0" layoutY="352.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.06);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.14);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 4, 0, 0, 1);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <TextField fx:id="T52" alignment="CENTER" disable="true" layoutX="211.0" layoutY="352.0" prefHeight="50.0" prefWidth="64.0" style="-fx-background-color: #EBEBEB; -fx-border-color: black;">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <font>
-            <Font size="24.0" />
-         </font>
+
+      <TextField fx:id="T55" alignment="CENTER" disable="true"
+         layoutX="403.0" layoutY="352.0" prefHeight="50.0" prefWidth="64.0"
+         style="
+            -fx-background-color: rgba(255,255,255,0.06);
+            -fx-background-radius: 8;
+            -fx-border-color: rgba(255,255,255,0.14);
+            -fx-border-width: 1.2; -fx-border-radius: 8;
+            -fx-text-fill: #f1f5f9; -fx-font-size: 22px; -fx-font-weight: bold;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 4, 0, 0, 1);
+         ">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
       </TextField>
-      <Button fx:id="jugarID" layoutX="85.0" layoutY="469.0" mnemonicParsing="false" onAction="#onButtonPlay" prefHeight="50.0" prefWidth="383.0" text="JUGAR">
-         <font>
-            <Font name="Marlett" size="21.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
+
+      <!-- ═══════════════════════════════════════════════════
+           SEPARADOR entre tablero y zona de acción
+      ════════════════════════════════════════════════════ -->
+      <Rectangle
+         layoutX="85.0" layoutY="415.0"
+         width="383.0" height="1.0"
+         style="-fx-fill: rgba(255,255,255,0.10);" />
+
+      <!-- ═══════════════════════════════════════════════════
+           LABEL de retroalimentación
+           Nielsen #1: Visibilidad del estado del sistema
+      ════════════════════════════════════════════════════ -->
+      <Label fx:id="labelText"
+         alignment="CENTER"
+         layoutX="85.0" layoutY="422.0"
+         prefHeight="27.0" prefWidth="383.0"
+         style="
+            -fx-text-fill: #a5b4fc;
+            -fx-font-weight: bold;
+         ">
+         <font><Font size="18.0" /></font>
+      </Label>
+
+      <!-- ═══════════════════════════════════════════════════
+           BOTÓN JUGAR  — Von Restorff: es EL elemento único.
+           Color de acento vibrante, sombra de color, bordes
+           redondeados, hover definido en CSS del controlador.
+           Nielsen #4: Consistencia y estándares
+      ════════════════════════════════════════════════════ -->
+      <Button fx:id="playID"
+         layoutX="85.0" layoutY="469.0"
+         mnemonicParsing="false"
+         onAction="#onButtonPlay"
+         prefHeight="52.0" prefWidth="383.0"
+         text="▶  JUGAR"
+         style="
+            -fx-background-color: linear-gradient(to bottom right, #6366f1, #8b5cf6);
+            -fx-background-radius: 14;
+            -fx-border-color: transparent;
+            -fx-border-radius: 14;
+            -fx-text-fill: white;
+            -fx-font-size: 20px;
+            -fx-font-weight: bold;
+            -fx-cursor: hand;
+            -fx-effect: dropshadow(gaussian, rgba(99,102,241,0.65), 18, 0.0, 0, 6);
+         ">
+         <font><Font name="Arial Bold" size="21.0" /></font>
+         <cursor><Cursor fx:constant="HAND" /></cursor>
       </Button>
-      <Button fx:id="finishID" layoutX="85.0" layoutY="430.0" mnemonicParsing="false" onAction="#onButtonPlays" prefHeight="40.0" prefWidth="377.0" text="Finalizar" visible="false" />
+
+      <!-- ═══════════════════════════════════════════════════
+           BOTÓN PISTA  — mismo diseño, visible dinámicamente
+      ════════════════════════════════════════════════════ -->
+      <Button fx:id="clueID"
+         layoutX="85.0" layoutY="469.0"
+         mnemonicParsing="false"
+         onAction="#onButtonClue"
+         prefHeight="52.0" prefWidth="383.0"
+         text="💡  Pista"
+         visible="false"
+         style="
+            -fx-background-color: linear-gradient(to bottom right, #0ea5e9, #38bdf8);
+            -fx-background-radius: 14;
+            -fx-border-color: transparent;
+            -fx-border-radius: 14;
+            -fx-text-fill: white;
+            -fx-font-size: 20px;
+            -fx-font-weight: bold;
+            -fx-cursor: hand;
+            -fx-effect: dropshadow(gaussian, rgba(14,165,233,0.65), 18, 0.0, 0, 6);
+         ">
+         <font><Font name="Arial Bold" size="21.0" /></font>
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+      </Button>
+
    </children>
 </Pane>
