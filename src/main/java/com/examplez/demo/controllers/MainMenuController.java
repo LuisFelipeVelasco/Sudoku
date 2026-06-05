@@ -7,6 +7,7 @@ import com.examplez.demo.models.SudokuGame;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import java.util.ArrayList;
@@ -107,8 +108,26 @@ public class MainMenuController {
         playID.setVisible(false);
     }
     @FXML protected void onButtonClue(){
-        stateCells= modelSudoku.giveClue(stateCells,blocks);
+        List<Integer> coordinates = modelSudoku.giveClue(stateCells,blocks);
         showBoard(stateCells);
+        int rowClue=coordinates.get(0);
+        int columnClue=coordinates.get(1);
+        String valueClue=blocks[rowClue][columnClue].getText();
+        int rowValueRepeated=modelSudoku.sameNumberInSameColumn(valueClue,columnClue,rowClue,blocks);
+        int columnValueRepeated=modelSudoku.sameNumberInSameRow(valueClue,columnClue,rowClue,blocks);
+        labelText.setText("");
+        if(columnValueRepeated!=7){
+            TextField textField=blocks[rowClue][columnValueRepeated];
+            labelText.setText("same numbers in row");
+            labelText.setStyle(labelText.getStyle() + "-fx-text-fill: red;");
+            textField.setStyle(textField.getStyle() + "-fx-background-color: red;");
+        }
+        else if(rowValueRepeated!=7){
+            TextField textField=blocks[columnClue][rowValueRepeated];
+            labelText.setText("same numbers in column");
+            labelText.setStyle(labelText.getStyle() + "-fx-text-fill: red;");
+            textField.setStyle(textField.getStyle() + "-fx-background-color: red;");
+        }
 
     }
 
@@ -143,7 +162,11 @@ public class MainMenuController {
         }
     }
     private void verification(String user_input , TextField textField){
-        if(modelSudoku.isNumberOneToSix(user_input)==false) {
+        if(user_input==""){
+            textField.setStyle(textField.getStyle() + "-fx-background-color: white;");
+
+        }
+        else if(modelSudoku.isNumberOneToSix(user_input)==false) {
             labelText.setText("Type a number 1-6");
             labelText.setStyle(labelText.getStyle() + "-fx-text-fill: red;");
             textField.setText("");

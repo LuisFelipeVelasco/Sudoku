@@ -187,22 +187,21 @@ public class SudokuGame {
 Method that iterate the boolean matrix to find a false cell and show it in the board
 Then, sets the cell as true to avoid show it again and disable its cell in the board
  */
-    public boolean[][] giveClue(boolean[][] matrixBools,TextField[][] blocks){
-        boolean find=false;
-        for(int row = 0; row < 6; row++) {
+    public List<Integer> giveClue(boolean[][] matrixBools, TextField[][] blocks) {
+        List<Integer> coordinates = new ArrayList<>();
+        for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 6; col++) {
                 //If the value of the cell hasn't been shown , then show it
                 if (!matrixBools[row][col] && Objects.equals(blocks[row][col].getText(), "")) {
                     //Set it like show it
-                    matrixBools[row][col]=true;
-                    find=true;
-                    break;
+                    matrixBools[row][col] = true;
+                    coordinates.add(row);
+                    coordinates.add(col);
+                    return coordinates;
                 }
             }
-            if(find){break;}
         }
-        return matrixBools;
-
+        return coordinates;
     }
 
         /*
@@ -216,25 +215,25 @@ Then, sets the cell as true to avoid show it again and disable its cell in the b
         Iterate all the blocks in the same column and verify if its value is equal to the value of the current block
         excluding itself,in that case return true;
     */
-    public boolean sameNumberInSameColumn(String user_input,int column,int row,TextField[][] blocks) {
+    public int sameNumberInSameColumn(String user_input,int column,int row,TextField[][] blocks) {
         for (int i = 0; i <= 5; i++) {
             String value_block = blocks[i][column].getText();
             if (value_block.equals(user_input) && i!=row) {
-                return true;
+                return i;
             }
         }
-        return false;
+        return 7;
 
     }
 
-    public boolean sameNumberInSameRow(String user_input,int column,int row,TextField[][] blocks) {
+    public int sameNumberInSameRow(String user_input, int column, int row, TextField[][] blocks) {
         for (int i = 0; i <= 5; i++) {
             String value_block = blocks[row][i].getText();
             if (value_block.equals(user_input) && i!=column) {
-                return true;
+                return i;
             }
         }
-        return false;
+        return 7;
 
     }
 }
