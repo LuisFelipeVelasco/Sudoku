@@ -121,12 +121,14 @@ public class MainMenuController {
             labelText.setText("same numbers in row");
             labelText.setStyle(labelText.getStyle() + "-fx-text-fill: red;");
             textField.setStyle(textField.getStyle() + "-fx-background-color: red;");
+
         }
         else if(rowValueRepeated!=7){
             TextField textField=blocks[columnClue][rowValueRepeated];
             labelText.setText("same numbers in column");
             labelText.setStyle(labelText.getStyle() + "-fx-text-fill: red;");
             textField.setStyle(textField.getStyle() + "-fx-background-color: red;");
+
         }
 
     }
@@ -136,7 +138,7 @@ public class MainMenuController {
     private void showBoard(boolean[][] show){
         for(int row = 0; row < 6; row++){
             for(int col = 0; col < 6; col++){
-                if(matrix[row][col]){
+                if(show[row][col]){
                     blocks[row][col].setText(
                             String.valueOf(modelSudoku.getValue(row,col)));
                     blocks[row][col].setDisable(true);
@@ -149,20 +151,41 @@ public class MainMenuController {
         }
     }
 
-    private void setListenerToTextFields() {
-        initialize();
-        for(int row = 0; row < 6; row++){
-            for(int col = 0; col < 6; col++){
-                TextField textField=blocks[row][col];
-                textField.textProperty(). addListener((observable, oldValue, newValue) -> {
-                    verification(newValue,textField);
+    private void setListenerToTextFields() {for(int row = 0; row < 6; row++){
+        for(int col = 0; col < 6; col++){
 
-                });
-            }
+            final int currentRow = row;
+            final int currentCol = col;
+
+            TextField textField = blocks[row][col];
+
+            textField.textProperty().addListener((obs, oldValue, newValue) -> {
+
+                verification(newValue, textField);
+
+                if(!newValue.isEmpty()){
+
+                    int repeatedRow = modelSudoku.sameNumberInSameColumn(newValue, currentCol, currentRow, blocks);
+
+                    int repeatedCol = modelSudoku.sameNumberInSameRow(newValue, currentCol, currentRow, blocks);
+                    int repeatedSubBloc= modelSudoku.sameNumberInSameBlock(newValue,currentCol,currentRow,blocks);
+
+                    if(repeatedRow != 7 || repeatedCol != 7){
+                        textField.setStyle("-fx-background-color:red;");
+                    } else if (repeatedSubBloc!=0) {
+                        textField.setStyle("-fx-background-color:red;");
+
+                    } else{
+                        textField.setStyle("-fx-background-color:white;");
+                    }
+
+                }
+            });
         }
     }
+    }
     private void verification(String user_input , TextField textField){
-        if(user_input==""){
+        if(user_input.equals("")){
             textField.setStyle(textField.getStyle() + "-fx-background-color: white;");
 
         }
