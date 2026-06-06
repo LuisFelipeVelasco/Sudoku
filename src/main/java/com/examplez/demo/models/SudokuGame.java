@@ -29,6 +29,7 @@ public class SudokuGame {
     }
 
     public void fillFullBoard() {
+
         solve(0, 0);
     }
 
@@ -138,18 +139,6 @@ public class SudokuGame {
     */
     public boolean[][] chooseCluesToShow(){
         boolean[][] show = new boolean[6][6];
-        for (int Row=0;Row<6;Row++){
-            int Col= ThreadLocalRandom.current().nextInt(0,6);
-            show[Row][Col]= true;
-
-        }
-        for (int Col=0;Col<6;Col++){
-            if(!numberOnCol(show,Col)){
-                int Row=ThreadLocalRandom.current().nextInt(0,6);
-                show[Row][Col]= true;
-            }
-
-        }// It verify  there is at least one number revealed per row. col and two per subBlock, if its valid the mini matrix its true if not it put a random number in the required row or column
         for (int RowStart=0;RowStart<6;RowStart+=2){
             for (int ColStart=0;ColStart<6;ColStart+=3){
                 while(countSubBlock(show,RowStart,ColStart)!=2){
@@ -187,14 +176,13 @@ public class SudokuGame {
 Method that iterate the boolean matrix to find a false cell and show it in the board
 Then, sets the cell as true to avoid show it again and disable its cell in the board
  */
-    public List<Integer> giveClue(boolean[][] matrixBools, TextField[][] blocks) {
+    public List<Integer> giveClue(TextField[][] blocks) {
         List<Integer> coordinates = new ArrayList<>();
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 6; col++) {
                 //If the value of the cell hasn't been shown , then show it
-                if (!matrixBools[row][col] && Objects.equals(blocks[row][col].getText(), "")) {
+                if (Objects.equals(blocks[row][col].getText(), "")) {
                     //Set it like show it
-                    matrixBools[row][col] = true;
                     coordinates.add(row);
                     coordinates.add(col);
                     return coordinates;
@@ -204,7 +192,22 @@ Then, sets the cell as true to avoid show it again and disable its cell in the b
         return coordinates;
     }
 
-        /*
+    public boolean isPossibleGiveClue(boolean[][] matrixBools) {
+        int numberCorrectBlocks=0;
+        for (int row = 0; row < 6; row++) {
+            for (int col = 0; col < 6; col++) {
+                //if the current block has a true value
+                if (matrixBools[row][col]) {
+                    numberCorrectBlocks++;
+                }
+            }
+        }
+        if(numberCorrectBlocks==35){return false;}
+        return true;
+    }
+
+
+    /*
     Verify if the string received is a number between 1 and 6
     */
     public boolean isNumberOneToSix(String user_input){
@@ -222,7 +225,7 @@ Then, sets the cell as true to avoid show it again and disable its cell in the b
                 return i;
             }
         }
-        return 7;
+        return -1;
 
     }
 
@@ -233,26 +236,86 @@ Then, sets the cell as true to avoid show it again and disable its cell in the b
                 return i;
             }
         }
-        return 7;
+        return -1;
 
     }
-    public int sameNumberInSameBlock(String user_input, int column, int row, TextField[][] blocks){
-
-
-        int counter=0;
+    public List<Integer> sameNumberInSameBlock(String user_input, int column, int row, TextField[][] blocks){
         int startRow = (row / 2) * 2;
         int startCol = (column / 3) * 3;
-        for (int i=  startRow;i<startRow+2;i++){
+        String value_SubBlock;
+        List<Integer> coordinates = new ArrayList<>();
+        for (int i=startRow;i<startRow+2;i++){
             for (int j= startCol;j<startCol+3;j++){
-                if(i == row && j == column){
-                    return 0;
-                }
-                String value_SubBlock = blocks[i][j].getText();
-                if (value_SubBlock.equals(user_input)){
-                    counter=1;
+                value_SubBlock = blocks[i][j].getText();
+                if (value_SubBlock.equals(user_input) && i!=row && j!=column){
+                    coordinates.add(i);
+                    coordinates.add(j);
+                    return coordinates;
                 }
             }
         }
-        return counter;}
+        return coordinates;}
+
+    public boolean isTheSudokuCompleted(boolean[][] matrixBools) {
+        int numberCorrectBlocks=0;
+        for (int row = 0; row < 6; row++) {
+            for (int col = 0; col < 6; col++) {
+                //if the current block has a true value
+                if (matrixBools[row][col]) {
+                    numberCorrectBlocks++;
+                }
+            }
+        }
+        if(numberCorrectBlocks==36){return true;}
+        return false;
+    }
+
+    public List<Integer> getCoordinatestextField(TextField[][] blocks,TextField textField) {
+        List<Integer> coordinates = new ArrayList<>();
+        boolean find=false;
+        for(int row = 0; row < 6; row++){
+            for(int col = 0; col < 6; col++){
+                if (blocks[row][col].equals(textField)){
+                    coordinates.add(row);
+                    coordinates.add(col);
+                    find=true;
+                    break;
+                };
+                if(find){break;}
+            };
+        }
+        return  coordinates;
+    }
+    public void printBoardBool(boolean[][] stateCells) {
+        System.out.println("--- SUDOKU BOARD ---");
+
+        for (int i = 0; i < size; i++) {
+            // 1. Print vertical box dividers every 2 rows (for 6x6 grid blocks)
+            if (i > 0 && i % 2 == 0) {
+                System.out.println("---------------------");
+            }
+
+            for (int j = 0; j < size; j++) {
+                // 2. Print horizontal box dividers every 3 columns
+                if (j > 0 && j % 3 == 0) {
+                    System.out.print("| ");
+                }
+
+                // 3. Print the actual number followed by a space
+                boolean number = stateCells[i][j];
+                System.out.print(number + " ");
+            }
+
+            // 4. Hit enter at the end of every row to move to the next line
+            System.out.println();
+        }
+        System.out.println("---------------------\n");
+    }
+
+
+
+
+
+
 }
 

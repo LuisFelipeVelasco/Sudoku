@@ -9,10 +9,7 @@ import javafx.scene.text.Text;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-
 import java.util.ArrayList;
-
-
 
 public class MainMenuController {
     @FXML private TextField T00;
@@ -55,6 +52,9 @@ public class MainMenuController {
     @FXML private Button playID;
     @FXML private Label labelText;
     private TextField[][] blocks = new TextField[6][6];
+    ArrayList<TextField> blocksModified = new ArrayList<>();
+    ArrayList<String> styleBlocksModified = new ArrayList<>();
+
     public void initialize(){
         blocks[0][0]=T00;
         blocks[0][1]=T01;
@@ -96,49 +96,66 @@ public class MainMenuController {
 
     SudokuGame modelSudoku= new SudokuGame();
     boolean[][] stateCells;
+    boolean newGame=false;
 
     @FXML
     protected void onButtonPlay() {
+        labelText.setText("Start playing");
+        labelText.setStyle(labelText.getStyle() + "-fx-text-fill: #185723;");
         modelSudoku.fillFullBoard();
         modelSudoku.printBoard();
         stateCells=modelSudoku.chooseCluesToShow();
+        modelSudoku.printBoardBool(stateCells);
+        cleanBoard();
         showBoard(stateCells);
         setListenerToTextFields();
         clueID.setVisible(true);
         playID.setVisible(false);
+        newGame=true;
     }
-    @FXML protected void onButtonClue(){
-        List<Integer> coordinates = modelSudoku.giveClue(stateCells,blocks);
-        showBoard(stateCells);
-        int rowClue=coordinates.get(0);
-        int columnClue=coordinates.get(1);
-        String valueClue=blocks[rowClue][columnClue].getText();
-        int rowValueRepeated=modelSudoku.sameNumberInSameColumn(valueClue,columnClue,rowClue,blocks);
-        int columnValueRepeated=modelSudoku.sameNumberInSameRow(valueClue,columnClue,rowClue,blocks);
-        labelText.setText("");
-        if(columnValueRepeated!=7){
-            TextField textField=blocks[rowClue][columnValueRepeated];
-            labelText.setText("same numbers in row");
-            labelText.setStyle(labelText.getStyle() + "-fx-text-fill: red;");
-            textField.setStyle(textField.getStyle() + "-fx-background-color: red;");
+    @FXML protected void onButtonClue() {
+        List<Integer> coordinates = modelSudoku.giveClue(blocks);
+        if (modelSudoku.isPossibleGiveClue(stateCells) && !coordinates.isEmpty()) {
+            int rowClue = coordinates.get(0);
+            int columnClue = coordinates.get(1);
+            stateCells[rowClue][columnClue] = true;
+            showClue(rowClue,columnClue);
+            String valueClue = blocks[rowClue][columnClue].getText();
+            int rowValueRepeated = modelSudoku.sameNumberInSameColumn(valueClue, columnClue, rowClue, blocks);
+            int columnValueRepeated = modelSudoku.sameNumberInSameRow(valueClue, columnClue, rowClue, blocks);
+            labelText.setText("");
+            if (columnValueRepeated != -1) {
+                TextField textField = blocks[rowClue][columnValueRepeated];
+                stateCells[rowClue][columnValueRepeated] = false;
+                blocksModified.add(textField);
+                styleBlocksModified.add(textField.getStyle());
 
-        }
-        else if(rowValueRepeated!=7){
-            TextField textField=blocks[columnClue][rowValueRepeated];
-            labelText.setText("same numbers in column");
-            labelText.setStyle(labelText.getStyle() + "-fx-text-fill: red;");
-            textField.setStyle(textField.getStyle() + "-fx-background-color: red;");
-
+                labelText.setText("same numbers in row");
+                labelText.setStyle(labelText.getStyle() + "-fx-text-fill: #69261C;");
+                textField.setStyle(textField.getStyle() + "-fx-background-color: #69261C;");
+            } else if (rowValueRepeated != -1) {
+                TextField textField = blocks[rowValueRepeated][columnClue];
+                stateCells[rowValueRepeated][columnClue] = false;
+                blocksModified.add(textField);
+                styleBlocksModified.add(textField.getStyle());
+                labelText.setText("same numbers in column");
+                labelText.setStyle(labelText.getStyle() + "-fx-text-fill: #69261C;");
+                textField.setStyle(textField.getStyle() + "-fx-background-color: #69261C;");
+            }
+        } else {
+            labelText.setText("You can´t ask for more clues");
+            labelText.setStyle(labelText.getStyle() + "-fx-text-fill: #69261C;");
         }
 
     }
-
-
-
-    private void showBoard(boolean[][] show){
+/*
+function that writes the board with the revealed numbers in the GUI, if the row and col of the blocks
+its equal to the row and col of show[][] it will get the values created of the original matrix and show it, in other case it will put it blank
+ */
+    private void showBoard(boolean[][] matrix){
         for(int row = 0; row < 6; row++){
             for(int col = 0; col < 6; col++){
-                if(show[row][col]){
+                if(matrix[row][col]){
                     blocks[row][col].setText(
                             String.valueOf(modelSudoku.getValue(row,col)));
                     blocks[row][col].setDisable(true);
@@ -150,55 +167,103 @@ public class MainMenuController {
             }
         }
     }
+    private void showClue(int row,int col){
+        blocks[row][col].setText(
+                String.valueOf(modelSudoku.getValue(row,col)));
+        blocks[row][col].setDisable(true);
+    }
 
-    private void setListenerToTextFields() {for(int row = 0; row < 6; row++){
+    private void setListenerToTextFields() {
 
-        for(int col = 0; col < 6; col++){
+        for(int row = 0; row < 6; row++){
+            for(int col = 0; col < 6; col++){
+                TextField textField=blocks[row][col];
+                textField.textProperty(). addListener((observable, oldValue, newValue) -> {
+                    verification(newValue,oldValue,textField);
+                });
+            }
+        }
+    }
+    private void verification(String user_input ,String old_input, TextField textField){
+        if(newGame){
+            List<Integer> coordinatesTextField=modelSudoku.getCoordinatestextField(blocks,textField);
+            int rowtextField=coordinatesTextField.get(0);
+            int columntextField=coordinatesTextField.get(1);
 
-            final int currentRow = row;
-            final int currentCol = col;
+            if(user_input.equals("")){
+                labelText.setText("");
+                for(int i=0;i<blocksModified.size();i++){
+                    if(blocksModified.get(i) ==textField){
+                        blocksModified.get(i).setStyle(styleBlocksModified.get(i));
+                        blocksModified.remove(i);
+                        styleBlocksModified.remove(i);
 
-            TextField textField = blocks[row][col];
-
-            textField.textProperty().addListener((obs, oldValue, newValue) -> {
-
-                if(stateCells[currentRow][currentCol]){
-                    return;
-                }
-                verification(newValue, textField);
-
-                if(!newValue.isEmpty()){
-
-                    int repeatedRow = modelSudoku.sameNumberInSameColumn(newValue, currentCol, currentRow, blocks);
-
-                    int repeatedCol = modelSudoku.sameNumberInSameRow(newValue, currentCol, currentRow, blocks);
-                    int repeatedSubBloc= modelSudoku.sameNumberInSameBlock(newValue,currentCol,currentRow,blocks);
-
-                    if(repeatedRow != 7 || repeatedCol != 7){
-                        textField.setStyle(textField.getStyle() + "-fx-background-color: red;");
-                    } else if (repeatedSubBloc!=0) {
-                        textField.setStyle(textField.getStyle() + "-fx-background-color: red;");
-
-                    } else{
-                        textField.setStyle(textField.getStyle() + "-fx-background-color: grey;");
                     }
+                }
+                stateCells[rowtextField][columntextField]=false;
+            }
+            else if(modelSudoku.isNumberOneToSix(user_input)==false) {
+                labelText.setText("Type a number 1-6");
+                labelText.setStyle(labelText.getStyle() + "-fx-text-fill: #69261C;");
+                textField.setText("");
+            }
+            else if(stateCells[rowtextField][columntextField]==false){
+
+                if(modelSudoku.sameNumberInSameColumn(user_input,columntextField,rowtextField,blocks)!=-1 && stateCells[rowtextField][columntextField]==false){
+                    blocksModified.add(textField);
+                    styleBlocksModified.add(textField.getStyle());
+                    labelText.setText("This number is in the  column already");
+                    labelText.setStyle(labelText.getStyle() + "-fx-text-fill: #69261C;");
+                    textField.setStyle(textField.getStyle() + "-fx-background-color: #69261C;");
 
                 }
-            });
+                else if(modelSudoku.sameNumberInSameRow(user_input,columntextField,rowtextField,blocks)!=-1 && stateCells[rowtextField][columntextField]==false){
+                    blocksModified.add(textField);
+                    styleBlocksModified.add(textField.getStyle());
+                    labelText.setText("This number is in the  row already");
+                    labelText.setStyle(labelText.getStyle() + "-fx-text-fill: #69261C;");
+                    textField.setStyle(textField.getStyle() + "-fx-background-color:#69261C;");
+
+                }
+
+                else if(!modelSudoku.sameNumberInSameBlock(user_input,columntextField,rowtextField,blocks).isEmpty() && stateCells[rowtextField][columntextField]==false){
+                    blocksModified.add(textField);
+                    styleBlocksModified.add(textField.getStyle());
+                    labelText.setText("This number is in the block already");
+                    labelText.setStyle(labelText.getStyle() + "-fx-text-fill: #69261C;");
+                    textField.setStyle(textField.getStyle() + "-fx-background-color:#69261C;");
+
+                }
+                else stateCells[rowtextField][columntextField]=true;
+
+            }
+            if(modelSudoku.isTheSudokuCompleted(stateCells)){
+                modelSudoku=new SudokuGame();
+                labelText.setText("You Did it , The sudoku is completed");
+                labelText.setStyle(labelText.getStyle() + "-fx-text-fill: #185723;");
+                for(int row = 0; row < 6; row++){
+                    for(int col = 0; col < 6; col++){
+                        blocks[row][col].setDisable(true);
+                    }
+                }
+                clueID.setVisible(false);
+                playID.setVisible(true);
+                newGame=false;
+
+            }
         }
     }
-    }
-    private void verification(String user_input , TextField textField){
-        if(user_input.equals("")){
-            textField.setStyle(textField.getStyle() + "-fx-background-color: grey;");
-
-        }
-        else if(modelSudoku.isNumberOneToSix(user_input)==false) {
-            labelText.setText("Type a number 1-6");
-            labelText.setStyle(labelText.getStyle() + "-fx-text-fill: red;");
-            textField.setText("");
-        }
-
+    private void cleanBoard(){
+        for(int row = 0; row < 6; row++){
+            for(int col = 0; col < 6; col++){
+                    blocks[row][col].setText("");
+                }
+            }
     }
 }
+
+
+
+
+
 
