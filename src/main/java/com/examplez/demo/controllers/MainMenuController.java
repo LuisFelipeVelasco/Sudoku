@@ -52,8 +52,12 @@ public class MainMenuController {
     @FXML private Button playID;
     @FXML private Label labelText;
     private TextField[][] blocks = new TextField[6][6];
+    // Maps each highlighted TextField to its CLEAN style (captured before any error color was applied)
     ArrayList<TextField> blocksModified = new ArrayList<>();
     ArrayList<String> styleBlocksModified = new ArrayList<>();
+
+    // A fixed base style for the label so we never accumulate color strings on it
+    private static final String LABEL_BASE_STYLE = "";
 
     public void initialize(){
         blocks[0][0]=T00;
@@ -101,7 +105,10 @@ public class MainMenuController {
     @FXML
     protected void onButtonPlay() {
         labelText.setText("Start playing");
-        labelText.setStyle(labelText.getStyle() + "-fx-text-fill: #185723;");
+        labelText.setStyle(LABEL_BASE_STYLE + "-fx-text-fill: #185723;");
+        // Clear any leftover error highlights from a previous game
+        blocksModified.clear();
+        styleBlocksModified.clear();
         modelSudoku.fillFullBoard();
         modelSudoku.printBoard();
         stateCells=modelSudoku.chooseCluesToShow();
@@ -124,27 +131,29 @@ public class MainMenuController {
             int rowValueRepeated = modelSudoku.sameNumberInSameColumn(valueClue, columnClue, rowClue, blocks);
             int columnValueRepeated = modelSudoku.sameNumberInSameRow(valueClue, columnClue, rowClue, blocks);
             labelText.setText("");
+            labelText.setStyle(LABEL_BASE_STYLE);
             if (columnValueRepeated != -1) {
                 TextField textField = blocks[rowClue][columnValueRepeated];
                 stateCells[rowClue][columnValueRepeated] = false;
+                // Capture the CLEAN style before applying the error color
                 blocksModified.add(textField);
                 styleBlocksModified.add(textField.getStyle());
-
                 labelText.setText("same numbers in row");
-                labelText.setStyle(labelText.getStyle() + "-fx-text-fill: #69261C;");
+                labelText.setStyle(LABEL_BASE_STYLE + "-fx-text-fill: #69261C;");
                 textField.setStyle(textField.getStyle() + "-fx-background-color: #69261C;");
             } else if (rowValueRepeated != -1) {
                 TextField textField = blocks[rowValueRepeated][columnClue];
                 stateCells[rowValueRepeated][columnClue] = false;
+                // Capture the CLEAN style before applying the error color
                 blocksModified.add(textField);
                 styleBlocksModified.add(textField.getStyle());
                 labelText.setText("same numbers in column");
-                labelText.setStyle(labelText.getStyle() + "-fx-text-fill: #69261C;");
+                labelText.setStyle(LABEL_BASE_STYLE + "-fx-text-fill: #69261C;");
                 textField.setStyle(textField.getStyle() + "-fx-background-color: #69261C;");
             }
         } else {
             labelText.setText("You can´t ask for more clues");
-            labelText.setStyle(labelText.getStyle() + "-fx-text-fill: #69261C;");
+            labelText.setStyle(LABEL_BASE_STYLE + "-fx-text-fill: #69261C;");
         }
 
     }
@@ -192,55 +201,63 @@ its equal to the row and col of show[][] it will get the values created of the o
 
             if(user_input.equals("")){
                 labelText.setText("");
-                for(int i=0;i<blocksModified.size();i++){
-                    if(blocksModified.get(i) ==textField){
+                labelText.setStyle(LABEL_BASE_STYLE);
+                // Remove error highlights for this cell AND any other cells it caused to be highlighted
+                for(int i = blocksModified.size() - 1; i >= 0; i--){
+                    if(blocksModified.get(i) == textField){
                         blocksModified.get(i).setStyle(styleBlocksModified.get(i));
                         blocksModified.remove(i);
                         styleBlocksModified.remove(i);
-
                     }
                 }
                 stateCells[rowtextField][columntextField]=false;
             }
             else if(modelSudoku.isNumberOneToSix(user_input)==false) {
                 labelText.setText("Type a number 1-6");
-                labelText.setStyle(labelText.getStyle() + "-fx-text-fill: #69261C;");
+                labelText.setStyle(LABEL_BASE_STYLE + "-fx-text-fill: #69261C;");
                 textField.setText("");
             }
             else if(stateCells[rowtextField][columntextField]==false){
 
-                if(modelSudoku.sameNumberInSameColumn(user_input,columntextField,rowtextField,blocks)!=-1 && stateCells[rowtextField][columntextField]==false){
+                if(modelSudoku.sameNumberInSameColumn(user_input,columntextField,rowtextField,blocks)!=-1){
+                    // Capture the CLEAN style before applying the error color
                     blocksModified.add(textField);
                     styleBlocksModified.add(textField.getStyle());
                     labelText.setText("This number is in the  column already");
-                    labelText.setStyle(labelText.getStyle() + "-fx-text-fill: #69261C;");
+                    labelText.setStyle(LABEL_BASE_STYLE + "-fx-text-fill: #69261C;");
                     textField.setStyle(textField.getStyle() + "-fx-background-color: #69261C;");
 
                 }
-                else if(modelSudoku.sameNumberInSameRow(user_input,columntextField,rowtextField,blocks)!=-1 && stateCells[rowtextField][columntextField]==false){
+                else if(modelSudoku.sameNumberInSameRow(user_input,columntextField,rowtextField,blocks)!=-1){
+                    // Capture the CLEAN style before applying the error color
                     blocksModified.add(textField);
                     styleBlocksModified.add(textField.getStyle());
                     labelText.setText("This number is in the  row already");
-                    labelText.setStyle(labelText.getStyle() + "-fx-text-fill: #69261C;");
+                    labelText.setStyle(LABEL_BASE_STYLE + "-fx-text-fill: #69261C;");
                     textField.setStyle(textField.getStyle() + "-fx-background-color:#69261C;");
 
                 }
 
-                else if(!modelSudoku.sameNumberInSameBlock(user_input,columntextField,rowtextField,blocks).isEmpty() && stateCells[rowtextField][columntextField]==false){
+                else if(!modelSudoku.sameNumberInSameBlock(user_input,columntextField,rowtextField,blocks).isEmpty()){
+                    // Capture the CLEAN style before applying the error color
                     blocksModified.add(textField);
                     styleBlocksModified.add(textField.getStyle());
                     labelText.setText("This number is in the block already");
-                    labelText.setStyle(labelText.getStyle() + "-fx-text-fill: #69261C;");
+                    labelText.setStyle(LABEL_BASE_STYLE + "-fx-text-fill: #69261C;");
                     textField.setStyle(textField.getStyle() + "-fx-background-color:#69261C;");
 
                 }
-                else stateCells[rowtextField][columntextField]=true;
+                else {
+                    stateCells[rowtextField][columntextField]=true;
+                    labelText.setText("");
+                    labelText.setStyle(LABEL_BASE_STYLE);
+                }
 
             }
             if(modelSudoku.isTheSudokuCompleted(stateCells)){
                 modelSudoku=new SudokuGame();
                 labelText.setText("You Did it , The sudoku is completed");
-                labelText.setStyle(labelText.getStyle() + "-fx-text-fill: #185723;");
+                labelText.setStyle(LABEL_BASE_STYLE + "-fx-text-fill: #185723;");
                 for(int row = 0; row < 6; row++){
                     for(int col = 0; col < 6; col++){
                         blocks[row][col].setDisable(true);
