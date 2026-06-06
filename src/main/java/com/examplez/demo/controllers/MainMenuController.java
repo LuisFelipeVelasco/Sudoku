@@ -152,6 +152,7 @@ public class MainMenuController {
     }
 
     private void setListenerToTextFields() {for(int row = 0; row < 6; row++){
+
         for(int col = 0; col < 6; col++){
 
             final int currentRow = row;
@@ -161,6 +162,9 @@ public class MainMenuController {
 
             textField.textProperty().addListener((obs, oldValue, newValue) -> {
 
+                if(stateCells[currentRow][currentCol]){
+                    return;
+                }
                 verification(newValue, textField);
 
                 if(!newValue.isEmpty()){
@@ -171,12 +175,12 @@ public class MainMenuController {
                     int repeatedSubBloc= modelSudoku.sameNumberInSameBlock(newValue,currentCol,currentRow,blocks);
 
                     if(repeatedRow != 7 || repeatedCol != 7){
-                        textField.setStyle("-fx-background-color:red;");
+                        textField.setStyle(textField.getStyle() + "-fx-background-color: red;");
                     } else if (repeatedSubBloc!=0) {
-                        textField.setStyle("-fx-background-color:red;");
+                        textField.setStyle(textField.getStyle() + "-fx-background-color: red;");
 
                     } else{
-                        textField.setStyle("-fx-background-color:white;");
+                        textField.setStyle(textField.getStyle() + "-fx-background-color: grey;");
                     }
 
                 }
@@ -186,7 +190,7 @@ public class MainMenuController {
     }
     private void verification(String user_input , TextField textField){
         if(user_input.equals("")){
-            textField.setStyle(textField.getStyle() + "-fx-background-color: white;");
+            textField.setStyle(textField.getStyle() + "-fx-background-color: grey;");
 
         }
         else if(modelSudoku.isNumberOneToSix(user_input)==false) {

@@ -244,6 +244,9 @@ Then, sets the cell as true to avoid show it again and disable its cell in the b
         int startCol = (column / 3) * 3;
         for (int i=  startRow;i<startRow+2;i++){
             for (int j= startCol;j<startCol+3;j++){
+                if(i == row && j == column){
+                    return 0;
+                }
                 String value_SubBlock = blocks[i][j].getText();
                 if (value_SubBlock.equals(user_input)){
                     counter=1;
