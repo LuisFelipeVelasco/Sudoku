@@ -1,5 +1,6 @@
 package com.examplez.demo.controllers;
 
+import com.examplez.demo.SudokuInitializable;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -28,7 +29,7 @@ import java.util.ArrayList;
  * @version 1.0
  * @see SudokuGame
  */
-public class MainMenuController {
+public class MainMenuController implements SudokuInitializable {
 
     // -----------------------------------------------------------------------
     // FXML-injected TextField grid (rows 0-5, columns 0-5)
@@ -176,7 +177,7 @@ public class MainMenuController {
     /**
      * Handles the <em>Play</em> button click.
      *
-     * <p>Generates a new fully solved board via {@link SudokuGame#fillFullBoard()},
+     * <p>Generates a new fully solved board via {@link SudokuGame#initialize()},
      * selects which cells to reveal using {@link SudokuGame#chooseCluesToShow()},
      * clears the UI grid, renders the initial clues, registers text-change
      * listeners on every editable cell, and transitions the toolbar to
@@ -189,7 +190,7 @@ public class MainMenuController {
         // Clear any leftover error highlights from a previous game
         blocksModified.clear();
         styleBlocksModified.clear();
-        modelSudoku.fillFullBoard();
+        modelSudoku.initialize();
         modelSudoku.printBoard();
         stateCells = modelSudoku.chooseCluesToShow();
         modelSudoku.printBoardBool(stateCells);

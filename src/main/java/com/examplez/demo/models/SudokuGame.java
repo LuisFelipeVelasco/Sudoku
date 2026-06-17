@@ -1,5 +1,6 @@
 package com.examplez.demo.models;
 
+import com.examplez.demo.SudokuInitializable;
 import javafx.scene.control.TextField;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @version 1.0
  * @see com.examplez.demo.controllers.MainMenuController
  */
-public class SudokuGame {
+public class SudokuGame implements SudokuInitializable {
 
     // -----------------------------------------------------------------------
     // Attributes
@@ -47,7 +48,7 @@ public class SudokuGame {
      * Internal representation of the Sudoku board.
      * Outer list index → row; inner list index → column.
      * Cells are initialised to {@code 0} (empty) and filled by
-     * {@link #fillFullBoard()}.
+     * {@link #initialize()}.
      */
     private ArrayList<ArrayList<Integer>> matrix;
 
@@ -84,7 +85,7 @@ public class SudokuGame {
      * {@link #matrix} is guaranteed to contain a valid, complete 6×6
      * solution.</p>
      */
-    public void fillFullBoard() {
+    public void initialize() {
         solve(0, 0);
     }
 
@@ -202,22 +203,6 @@ public class SudokuGame {
         return show;
     }
 
-    /**
-     * Checks whether at least one revealed cell exists in a given column.
-     *
-     * @param show the current clue-visibility mask
-     * @param Col  the zero-based column index to inspect
-     * @return {@code true} if any cell in {@code Col} is marked as revealed;
-     *         {@code false} otherwise
-     */
-    private boolean numberOnCol(boolean[][] show, int Col) {
-        for (int Row = 0; Row < 6; Row++) {
-            if (show[Row][Col]) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     /**
      * Counts the number of revealed cells within a specific 2×3 sub-block.
@@ -451,18 +436,9 @@ public class SudokuGame {
     }
 
     // -----------------------------------------------------------------------
-    // Accessors
+    // Accessor
     // -----------------------------------------------------------------------
 
-    /**
-     * Returns the entire board as a nested {@link ArrayList}.
-     *
-     * @return a 6×6 {@link ArrayList} of {@link ArrayList}s containing the
-     *         current board values (0 = empty, 1–6 = filled)
-     */
-    public ArrayList<ArrayList<Integer>> getBoard() {
-        return matrix;
-    }
 
     /**
      * Returns the value stored at a specific cell.
