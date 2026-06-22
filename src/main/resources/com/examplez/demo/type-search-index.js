@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"com.examplez.demo","l":"GameLauncher"},{"p":"com.examplez.demo","l":"Launcher"},{"p":"com.examplez.demo.controllers","l":"MainMenuController"},{"p":"com.examplez.demo.models","l":"SudokuGame"}];updateSearchResults();

@@ -1,5 +1,7 @@
 package com.examplez.demo;
 
+import java.util.List;
+
 /**
  * Defines the initialization contract for all core components of the Sudoku game.
  *
@@ -10,4 +12,5 @@ package com.examplez.demo;
 
 public interface SudokuInitializable {
     void initialize();
+
 }
