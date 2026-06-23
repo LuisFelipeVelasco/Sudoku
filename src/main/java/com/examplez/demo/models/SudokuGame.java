@@ -1,6 +1,7 @@
 package com.examplez.demo.models;
 
 import com.examplez.demo.SudokuInitializable;
+import com.examplez.demo.controllers.MainMenuController;
 import javafx.scene.control.TextField;
 
 import java.util.ArrayList;
@@ -25,12 +26,12 @@ import java.util.concurrent.ThreadLocalRandom;
  * </ul>
  *
  * <p>The grid utilizes a standard 6×6 Sudoku layout with 2-row × 3-column
- * sub-blocks (6 blocks total).</p>
+ * sub-cells (6 cells total).</p>
  *
  * @author jeronimo rojas imbachi
  * @author Luis Felipe Velasco
  * @version 1.1
- * @see com.examplez.demo.controllers.MainMenuController
+ * @see MainMenuController
  */
 public class SudokuGame implements SudokuInitializable {
 
@@ -45,11 +46,18 @@ public class SudokuGame implements SudokuInitializable {
     private final int size = 6;
 
     /**
-     * Internal master matrix representing the complete, valid solution board.
+     * Internal master matrixSudokuSolve representing the complete, valid solution board.
      * Outer list index maps to rows; inner list index maps to columns.
      * Cells are initially filled with {@code 0} and populated by {@link #initialize()}.
      */
-    private ArrayList<ArrayList<Integer>> matrix;
+    private ArrayList<ArrayList<String>> matrixSudokuSolve;
+
+
+    /**
+     * Tracks which cells have been correctly filled or revealed.
+     * {@code true} means the cell value is finalized or free of conflicts.
+     */
+    private ArrayList<ArrayList<Boolean>> confirmedCells;
 
     // -----------------------------------------------------------------------
     // Constructor
@@ -58,17 +66,26 @@ public class SudokuGame implements SudokuInitializable {
     /**
      * Constructs a new {@code SudokuGame} instance with an unpopulated grid state.
      *
-     * <p>Allocates a 6×6 nested {@link ArrayList} matrix and pre-fills every
+     * <p>Allocates a 6×6 nested {@link ArrayList} matrixSudokuSolve and pre-fills every
      * coordinate with {@code 0} to establish an unsolved base layout.</p>
      */
     public SudokuGame() {
-        this.matrix = new ArrayList<>(size);
+        this.matrixSudokuSolve = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
-            ArrayList<Integer> row = new ArrayList<>(size);
+            ArrayList<String> row = new ArrayList<>(size);
             for (int j = 0; j < size; j++) {
-                row.add(0); // 0 represents an empty cell
+                row.add("0"); // 0 represents an empty cell
             }
-            this.matrix.add(row);
+            this.matrixSudokuSolve.add(row);
+        }
+
+        this.confirmedCells = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            ArrayList<Boolean> row = new ArrayList<>(size);
+            for (int j = 0; j < size; j++) {
+                row.add(false); // 0 represents an empty cell
+            }
+            this.confirmedCells.add(row);
         }
     }
 
@@ -80,11 +97,13 @@ public class SudokuGame implements SudokuInitializable {
      * Generates a complete, structurally valid, and randomized Sudoku puzzle board.
      *
      * <p>Invokes the internal recursive backtracking routine {@link #solve(int, int)}
-     * starting at position (0, 0). Upon return, {@link #matrix} is guaranteed to
-     * hold a fully filled legal solution matrix.</p>
+     * starting at position (0, 0). Upon return, {@link #matrixSudokuSolve} is guaranteed to
+     * hold a fully filled legal solution matrixSudokuSolve.</p>
      */
     public void initialize() {
         solve(0, 0);
+        chooseCluesToShow();
+        
     }
 
     /**
@@ -92,7 +111,7 @@ public class SudokuGame implements SudokuInitializable {
      *
      * <p>Shuffles values from 1 to 6 uniquely for each cell node processing stage. If a
      * candidate number passes row, column, and sub-block isolation constraints, it is assigned
-     * to the matrix index and execution moves forward. If a downstream path fails, the value is
+     * to the matrixSudokuSolve index and execution moves forward. If a downstream path fails, the value is
      * reset to {@code 0} and backtracks.</p>
      *
      * @param row zero-based index of the target row being evaluated
@@ -113,19 +132,58 @@ public class SudokuGame implements SudokuInitializable {
         Collections.shuffle(numbers);
 
         for (int num : numbers) {
-            if (isValidMove(row, col, num)) {
-                this.matrix.get(row).set(col, num);
+            if (isValidCell(row, col, String.valueOf(num),this.matrixSudokuSolve)) {
+                this.matrixSudokuSolve.get(row).set(col,String.valueOf(num));
 
                 if (solve(row, col + 1)) {
                     return true;
                 }
 
                 // Backtrack: undo the placement
-                this.matrix.get(row).set(col, 0);
+                this.matrixSudokuSolve.get(row).set(col, "0");
             }
         }
 
         return false; // No valid number found — trigger backtracking
+    }
+
+    // -----------------------------------------------------------------------
+    // Clue selection
+    // -----------------------------------------------------------------------
+
+    /**
+     * Generates a visibility tracking map array denoting initial game starting hints.
+     *
+     * <p>Enforces a balanced game puzzle distribution rule ensuring exactly <strong>two
+     * revealed fields per localized 2×3 sub-block</strong> region. Iteratively selects
+     * coordinates randomly within block limits until 12 locations across the board
+     * return marked as visible clues.</p>
+     *
+     * @return a 6×6 boolean matrixSudokuSolve mapping grid locations; where {@code true} signals
+     * a visible system clue field visible on start
+     */
+    private void chooseCluesToShow() {
+        for (int RowStart = 0; RowStart < 6; RowStart += 2) {
+            for (int ColStart = 0; ColStart < 6; ColStart += 3) {
+                while (countSubBlock(this.confirmedCells, RowStart, ColStart) != 2) {
+                    int Row = RowStart + ThreadLocalRandom.current().nextInt(2);
+                    int Col = ColStart + ThreadLocalRandom.current().nextInt(3);
+                    this.confirmedCells.get(Row).set(Col,true);
+                }
+            }
+        }
+    }
+
+    public ArrayList<ArrayList<Boolean>> getConfirmedCells(){
+        return this.confirmedCells;
+    }
+
+    public void setConfirmedStateOfCell(int column,int row, boolean confirmedState){
+        confirmedCells.get(row).set(column,confirmedState);
+    }
+
+    public boolean getConfirmedStateOfCell(int column,int row){
+        return confirmedCells.get(row).get(column);
     }
 
     /**
@@ -144,10 +202,10 @@ public class SudokuGame implements SudokuInitializable {
      * @param num candidate value (1–6) being evaluated for safety
      * @return {@code true} if the integer satisfies all solution criteria; {@code false} if a rule conflict occurs
      */
-    private boolean isValidMove(int row, int col, int num) {
+    private boolean isValidCell(int row, int col, String num,ArrayList<ArrayList<String>> cell) {
         for (int i = 0; i < size; i++) {
-            if (this.matrix.get(row).get(i) == num) return false; // Row conflict
-            if (this.matrix.get(i).get(col) == num) return false; // Column conflict
+            if (cell.get(row).get(i) == num) return false; // Row conflict
+            if (cell.get(i).get(col) == num) return false; // Column conflict
         }
 
         // Sub-block check (2 rows × 3 columns)
@@ -156,87 +214,80 @@ public class SudokuGame implements SudokuInitializable {
 
         for (int r = boxRowStart; r < boxRowStart + 2; r++) {
             for (int c = boxColStart; c < boxColStart + 3; c++) {
-                if (this.matrix.get(r).get(c) == num) return false;
+                if (cell.get(r).get(c) == num) return false;
             }
         }
 
         return true;
     }
 
-    /**
-     * Checks if a character string entry creates structural duplication within the live UI matrix layout.
-     *
-     * <p>Directly scans the visual grid layout of text elements to ensure cross-field values match
-     * row, column, and sub-block uniqueness parameters before rendering changes permanent.</p>
-     *
-     * @param row    zero-based layout grid index row to evaluate
-     * @param col    zero-based layout grid index column to evaluate
-     * @param num    the text input character value string provided by the user
-     * @param blocks 6×6 live reference array container holding active interface {@link TextField} instances
-     * @return {@code true} if the input text causes no collision in row, col, or block spaces; {@code false} otherwise
-     */
-    public boolean isValidBlock(int row, int col, String num , TextField[][] blocks) {
-        for (int i = 0; i < size; i++) {
-            if (blocks[row][i].getText() == num) return false; // Row conflict
-            if (blocks[i][col].getText() == num) return false; // Column conflict
+
+    public List<List<Integer>> getCoordinatesRepeatedInvalidCells(String value, int column, int row , ArrayList<ArrayList<String>> cells ) {
+        int rowValueRepeated    = sameNumberInSameColumn(value, column, row, cells);
+        int columnValueRepeated = sameNumberInSameRow(value, column, row, cells);
+        List<Integer> blockValueRepeated = sameNumberInSameBlock(value, column, row, cells);
+        List<List<Integer>> repeatedInvalidCells = new ArrayList<>(List.of());
+        
+        if (columnValueRepeated != -1) {
+            setConfirmedStateOfCell(columnValueRepeated,row,false);
+            repeatedInvalidCells.add(List.of(row,columnValueRepeated));
         }
-
-        // Sub-block check (2 rows × 3 columns)
-        int boxRowStart = (row / 2) * 2;
-        int boxColStart = (col / 3) * 3;
-
-        for (int r = boxRowStart; r < boxRowStart + 2; r++) {
-            for (int c = boxColStart; c < boxColStart + 3; c++) {
-                if (blocks[r][c].getText() == num) return false;
-            }
+        if (rowValueRepeated != -1) {
+            setConfirmedStateOfCell(column,rowValueRepeated,false);
+            repeatedInvalidCells.add(List.of(rowValueRepeated,column));
         }
-
-        return true;
-    }
-
-    // -----------------------------------------------------------------------
-    // Clue selection
-    // -----------------------------------------------------------------------
-
-    /**
-     * Generates a visibility tracking map array denoting initial game starting hints.
-     *
-     * <p>Enforces a balanced game puzzle distribution rule ensuring exactly <strong>two
-     * revealed fields per localized 2×3 sub-block</strong> region. Iteratively selects
-     * coordinates randomly within block limits until 12 locations across the board
-     * return marked as visible clues.</p>
-     *
-     * @return a 6×6 boolean matrix mapping grid locations; where {@code true} signals
-     * a visible system clue field visible on start
-     */
-    public boolean[][] chooseCluesToShow() {
-        boolean[][] show = new boolean[6][6];
-        for (int RowStart = 0; RowStart < 6; RowStart += 2) {
-            for (int ColStart = 0; ColStart < 6; ColStart += 3) {
-                while (countSubBlock(show, RowStart, ColStart) != 2) {
-                    int Row = RowStart + ThreadLocalRandom.current().nextInt(2);
-                    int Col = ColStart + ThreadLocalRandom.current().nextInt(3);
-                    show[Row][Col] = true;
-                }
-            }
+        if (!blockValueRepeated.isEmpty()) {
+            rowValueRepeated = blockValueRepeated.get(0);
+            columnValueRepeated = blockValueRepeated.get(1);
+            setConfirmedStateOfCell(columnValueRepeated,rowValueRepeated,false);
+            repeatedInvalidCells.add(List.of(rowValueRepeated,columnValueRepeated));
         }
-        return show;
+        return repeatedInvalidCells;
     }
 
 
+    public List<List<Integer>> getRepeatedValidCells(String value, int column, int row, ArrayList<ArrayList<String>> cells) {
+        int rowValueRepeated = sameNumberInSameColumn(value, column, row, cells);
+        int columnValueRepeated = sameNumberInSameRow(value, column, row, cells);
+        List<Integer> blockValueRepeated = sameNumberInSameBlock(value, column, row, cells);
+        List<List<Integer>> repeatedValidCells = new ArrayList<>(List.of());
+
+        if (rowValueRepeated != -1 && !getConfirmedStateOfCell(column,rowValueRepeated)) {
+            if (isValidCell(rowValueRepeated, column, cells.get(rowValueRepeated).get(column),cells)) {
+                setConfirmedStateOfCell(column,rowValueRepeated,true);
+                repeatedValidCells.add(List.of(rowValueRepeated,column));
+            }
+        }
+        if (columnValueRepeated != -1 && !getConfirmedStateOfCell(columnValueRepeated,row)) {
+            if (isValidCell(row, columnValueRepeated, cells.get(row).get(columnValueRepeated), cells)) {
+                setConfirmedStateOfCell(columnValueRepeated,row,true);
+                repeatedValidCells.add(List.of(row,columnValueRepeated));
+            }
+        }
+        if (!blockValueRepeated.isEmpty()) {
+            int rowValueBlockRepeated = blockValueRepeated.get(0);
+            int columnValueBlockRepeated = blockValueRepeated.get(1);
+            if (isValidCell(rowValueBlockRepeated, columnValueBlockRepeated, cells.get(rowValueBlockRepeated).get(columnValueBlockRepeated), cells) && !getConfirmedStateOfCell(columnValueBlockRepeated,rowValueBlockRepeated)) {
+                setConfirmedStateOfCell(columnValueBlockRepeated,rowValueBlockRepeated,true);
+                repeatedValidCells.add(List.of(rowValueRepeated,columnValueRepeated));
+            }
+        }
+        return repeatedValidCells;
+    }
+    
     /**
      * Calculates total accumulated clue configurations presently activated within a single 2×3 sub-block.
      *
-     * @param show     the current 6×6 starting visibility tracker mask array layout
+     * @param matrix     the current 6×6 starting visibility tracker mask array layout
      * @param RowStart upper-most top row bound index location of the target sub-block
      * @param ColStart left-most start column bound index location of the target sub-block
      * @return aggregate total number of coordinates flagged as visible truths ({@code true}) inside the box region
      */
-    private int countSubBlock(boolean[][] show, int RowStart, int ColStart) {
+    private int countSubBlock(ArrayList<ArrayList<Boolean>> matrix, int RowStart, int ColStart) {
         int counter = 0;
         for (int i = RowStart; i < RowStart + 2; i++) {
             for (int j = ColStart; j < ColStart + 3; j++) {
-                if (show[i][j]) {
+                if (matrix.get(i).get(j)) {
                     counter++;
                 }
             }
@@ -254,15 +305,15 @@ public class SudokuGame implements SudokuInitializable {
      * <p>Inspects text fields linearly, returning the coordinate indices of the initial element
      * displaying an empty string sequence.</p>
      *
-     * @param blocks 6×6 reference matrix array container holding active interface {@link TextField} elements
+     * @param cells 6×6 reference matrixSudokuSolve array container holding active interface {@link TextField} elements
      * @return a coordinate list pair consisting of {@code [row, col]} locating the target node position;
      * empty list array if every cell space contains input text characters
      */
-    public List<Integer> giveClue(TextField[][] blocks) {
+    public List<Integer> giveClue(ArrayList<ArrayList<String>> cells) {
         List<Integer> coordinates = new ArrayList<>();
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 6; col++) {
-                if (Objects.equals(blocks[row][col].getText(), "")) {
+                if (Objects.equals(cells.get(row).get(col), "")) {
                     coordinates.add(row);
                     coordinates.add(col);
                     return coordinates;
@@ -278,19 +329,18 @@ public class SudokuGame implements SudokuInitializable {
      * <p>To safeguard gameplay, requests are blocked once 35 of 36 grid puzzle pieces
      * register as complete, forcing the user to commit the final input string manually.</p>
      *
-     * @param matrixBools 6×6 verification status array mask tracking confirmed valid blocks ({@code true} = verified)
      * @return {@code true} if clue distribution paths remain unlocked; {@code false} if 35 fields resolve as finalized
      */
-    public boolean isPossibleGiveClue(boolean[][] matrixBools) {
-        int numberCorrectBlocks = 0;
+    public boolean isPossibleGiveClue() {
+        int numberCorrectcells = 0;
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 6; col++) {
-                if (matrixBools[row][col]) {
-                    numberCorrectBlocks++;
+                if (confirmedCells.get(row).get(col)) {
+                    numberCorrectcells++;
                 }
             }
         }
-        return numberCorrectBlocks != 35;
+        return numberCorrectcells != 35;
     }
 
     // -----------------------------------------------------------------------
@@ -316,12 +366,12 @@ public class SudokuGame implements SudokuInitializable {
      * @param user_input character value string searched across target track limits
      * @param column     zero-based index coordinate of the target vertical track column line
      * @param row        zero-based source coordinate row index excluded from matching processes
-     * @param blocks     6×6 tracking interface grid container hosting live display {@link TextField} nodes
+     * @param cells     6×6 tracking interface grid container hosting live display {@link TextField} nodes
      * @return matching zero-based row index pointing to structural duplication location; {@code -1} if line remains safe
      */
-    public int sameNumberInSameColumn(String user_input, int column, int row, TextField[][] blocks) {
+    public int sameNumberInSameColumn(String user_input, int column, int row, ArrayList<ArrayList<String>> cells) {
         for (int i = 0; i <= 5; i++) {
-            String value_block = blocks[i][column].getText();
+            String value_block = cells.get(i).get(column);
             if (value_block.equals(user_input) && i != row) {
                 return i;
             }
@@ -338,12 +388,12 @@ public class SudokuGame implements SudokuInitializable {
      * @param user_input character value string searched across target track limits
      * @param column     zero-based source coordinate column index excluded from matching processes
      * @param row        zero-based index coordinate of the target horizontal track row line
-     * @param blocks     6×6 tracking interface grid container hosting live display {@link TextField} nodes
+     * @param cells     6×6 tracking interface grid container hosting live display {@link TextField} nodes
      * @return matching zero-based column index pointing to structural duplication location; {@code -1} if line remains safe
      */
-    public int sameNumberInSameRow(String user_input, int column, int row, TextField[][] blocks) {
+    public int sameNumberInSameRow(String user_input, int column, int row, ArrayList<ArrayList<String>> cells) {
         for (int i = 0; i <= 5; i++) {
-            String value_block = blocks[row][i].getText();
+            String value_block = cells.get(row).get(i);
             if (value_block.equals(user_input) && i != column) {
                 return i;
             }
@@ -359,16 +409,16 @@ public class SudokuGame implements SudokuInitializable {
      * @param user_input string input value string searched across local boundary arrays
      * @param column     zero-based lookup source element coordinate index column position
      * @param row        zero-based lookup source element coordinate index row position
-     * @param blocks     6×6 tracking interface grid container hosting live display {@link TextField} nodes
+     * @param cells     6×6 tracking interface grid container hosting live display {@link TextField} nodes
      * @return coordinate container pair matching {@code [row, col]} pinpointing conflict origin; empty list if safe
      */
-    public List<Integer> sameNumberInSameBlock(String user_input, int column, int row, TextField[][] blocks) {
+    public List<Integer> sameNumberInSameBlock(String user_input, int column, int row, ArrayList<ArrayList<String>> cells) {
         int startRow = (row / 2) * 2;
         int startCol = (column / 3) * 3;
         List<Integer> coordinates = new ArrayList<>();
         for (int i = startRow; i < startRow + 2; i++) {
             for (int j = startCol; j < startCol + 3; j++) {
-                String value_SubBlock = blocks[i][j].getText();
+                String value_SubBlock = cells.get(i).get(j);
                 if (value_SubBlock.equals(user_input) && i != row && j != column) {
                     coordinates.add(i);
                     coordinates.add(j);
@@ -382,19 +432,18 @@ public class SudokuGame implements SudokuInitializable {
     /**
      * Determines if the player has successfully finalized all 36 fields across the puzzle board layout.
      *
-     * @param matrixBools 6×6 tracking layout array mask logging active verification status variables
      * @return {@code true} if every single cell coordinate reads marked valid and finalized; {@code false} otherwise
      */
-    public boolean isTheSudokuCompleted(boolean[][] matrixBools) {
-        int numberCorrectBlocks = 0;
+    public boolean isTheSudokuCompleted() {
+        int numberCorrectcells = 0;
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 6; col++) {
-                if (matrixBools[row][col]) {
-                    numberCorrectBlocks++;
+                if (confirmedCells.get(row).get(col)) {
+                    numberCorrectcells++;
                 }
             }
         }
-        return numberCorrectBlocks == 36;
+        return numberCorrectcells == 36;
     }
 
     /**
@@ -403,25 +452,11 @@ public class SudokuGame implements SudokuInitializable {
      * <p>Executes linear pointer checks across the block grid array variables using reference-equality checks
      * to resolve coordinate index maps.</p>
      *
-     * @param blocks    6×6 tracking layout array container tracking interface UI elements
+     * @param cells    6×6 tracking layout array container tracking interface UI elements
      * @param textField current active visual interaction display component being tracked down
      * @return index coordinate identifier array pair containing {@code [row, col]}; empty list layout if target missing
      */
-    public List<Integer> getCoordinatestextField(TextField[][] blocks, TextField textField) {
-        List<Integer> coordinates = new ArrayList<>();
-        boolean find = false;
-        outer:
-        for (int row = 0; row < 6; row++) {
-            for (int col = 0; col < 6; col++) {
-                if (blocks[row][col].equals(textField)) {
-                    coordinates.add(row);
-                    coordinates.add(col);
-                    break outer;
-                }
-            }
-        }
-        return coordinates;
-    }
+
 
     // -----------------------------------------------------------------------
     // Accessor
@@ -434,8 +469,8 @@ public class SudokuGame implements SudokuInitializable {
      * @param col zero-based index mapping column coordinates
      * @return solution integer mapping answer metrics; returns {@code 0} if unallocated or empty
      */
-    public int getValue(int row, int col) {
-        return matrix.get(row).get(col);
+    public String  getValue(int row, int col) {
+        return matrixSudokuSolve.get(row).get(col);
     }
 
     // -----------------------------------------------------------------------
@@ -443,7 +478,7 @@ public class SudokuGame implements SudokuInitializable {
     // -----------------------------------------------------------------------
 
     /**
-     * Outputs the master solution matrix configurations to standard output trace streams.
+     * Outputs the master solution matrixSudokuSolve configurations to standard output trace streams.
      *
      * <p>Renders structural box breaks utilizing visual lines to clearly map
      * out localized 2×3 segment distributions.</p>
@@ -458,7 +493,7 @@ public class SudokuGame implements SudokuInitializable {
                 if (j > 0 && j % 3 == 0) {
                     System.out.print("| ");
                 }
-                System.out.print(this.matrix.get(i).get(j) + " ");
+                System.out.print(this.matrixSudokuSolve.get(i).get(j) + " ");
             }
             System.out.println();
         }
@@ -466,13 +501,12 @@ public class SudokuGame implements SudokuInitializable {
     }
 
     /**
-     * Outputs a boolean layout visualization map matrix directly onto console system streams.
+     * Outputs a boolean layout visualization map matrixSudokuSolve directly onto console system streams.
      *
      * <p>Helpful tool to inspect active mask distributions and evaluate programmatic status updates.</p>
      *
-     * @param stateCells external 6×6 tracking configuration array containing status metrics to visually display
      */
-    public void printBoardBool(boolean[][] stateCells) {
+    public void printBoardBool() {
         System.out.println("--- SUDOKU BOARD ---");
         for (int i = 0; i < size; i++) {
             if (i > 0 && i % 2 == 0) {
@@ -482,7 +516,7 @@ public class SudokuGame implements SudokuInitializable {
                 if (j > 0 && j % 3 == 0) {
                     System.out.print("| ");
                 }
-                System.out.print(stateCells[i][j] + " ");
+                System.out.print(this.confirmedCells.get(i).get(j) + " ");
             }
             System.out.println();
         }
