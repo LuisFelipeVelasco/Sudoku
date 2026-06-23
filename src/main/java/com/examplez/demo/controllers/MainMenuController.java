@@ -114,12 +114,11 @@ public class MainMenuController implements SudokuInitializable {
      * {@code true} while a game is in progress; prevents listener logic
      * from running before a game has started or after it is completed.
      */
-    boolean newGame = false;
+    boolean firstGame = true;
 
     // -----------------------------------------------------------------------
     // JavaFX lifecycle
     // -----------------------------------------------------------------------
-
     /**
      * Called automatically by the JavaFX FXML loader after all
      * {@code @FXML} fields have been injected.
@@ -184,13 +183,13 @@ public class MainMenuController implements SudokuInitializable {
         cleanBoard();
         modelSudoku = new SudokuGame();
         labelText.setText("Start playing");
-        labelText.setStyle("-fx-text-fill: #185723;");
+        labelText.setStyle("-fx-text-fill: #278438;");
         modelSudoku.initialize();
+        modelSudoku.printBoard();
         showBoard(modelSudoku.getConfirmedCells());
         setListenerToTextFields();
         clueID.setVisible(true);
         playID.setVisible(false);
-        newGame = true;
     }
 
     /**
@@ -204,10 +203,10 @@ public class MainMenuController implements SudokuInitializable {
      */
     @FXML
     private void onButtonClue() {
-        if (modelSudoku.isPossibleGiveClue()) {
-            List<Integer> coordinates = modelSudoku.giveClue(getMatrixValueCells());
-            int rowClue = coordinates.get(0);
-            int columnClue = coordinates.get(1);
+        if (modelSudoku.isPossibleGiveClue(getMatrixValueCells())) {
+            List<Integer> coordinatesClue = modelSudoku.giveClue(getMatrixValueCells());
+            int rowClue = coordinatesClue.get(0);
+            int columnClue = coordinatesClue.get(1);
             modelSudoku.setConfirmedStateOfCell(columnClue,rowClue,true);
             showClue(rowClue, columnClue);
             String valueClue = cells[rowClue][columnClue].getText();
@@ -215,12 +214,13 @@ public class MainMenuController implements SudokuInitializable {
             if(repeatedInvalidCells.isEmpty())labelText.setText("");
             else{
                 for(List<Integer> c:repeatedInvalidCells){
-                    editInterfaceDependingOnInputValidation("invalid number", false, cells[c.get(0)][c.get(1)]);
+                    editInterfaceDependingOnInputValidation("Watch out, a number you typed nearby is invalid.", false, cells[c.get(0)][c.get(1)]);
                 }
             }
+            modelSudoku.printBoardBool();
         } else {
             labelText.setText("You can't ask for more clues");
-            labelText.setStyle("-fx-text-fill: #69261C;");
+            labelText.setStyle("-fx-text-fill: #8e2115;");
         }
     }
 
@@ -241,16 +241,17 @@ public class MainMenuController implements SudokuInitializable {
      * revealed as a starting clue
      */
     private void showBoard(ArrayList<ArrayList<Boolean>> validCells) {
-        for (int row = 0; row < 6; row++) {
-            for (int col = 0; col < 6; col++) {
-                if (validCells.get(row).get(col)) {
-                    cells[row][col].setText(String.valueOf(modelSudoku.getValue(row, col)));
-                    cells[row][col].setDisable(true);
-                } else {
-                    cells[row][col].setDisable(false);
+            for (int row = 0; row < 6; row++) {
+                for (int col = 0; col < 6; col++) {
+                    if (validCells.get(row).get(col)) {
+                        cells[row][col].setText(String.valueOf(modelSudoku.getValue(row, col)));
+                        cells[row][col].setDisable(true);
+                    } else {
+                        cells[row][col].setDisable(false);
+                    }
                 }
             }
-        }
+
     }
 
     /**
@@ -272,14 +273,18 @@ public class MainMenuController implements SudokuInitializable {
      * is executed whenever the cell's text changes, providing live validation feedback.</p>
      */
     private void setListenerToTextFields() {
-        for (int row = 0; row < 6; row++) {
-            for (int col = 0; col < 6; col++) {
-                TextField textField = cells[row][col];
-                textField.textProperty().addListener((observable, oldValue, newValue) -> {
-                    verification(newValue, oldValue, textField);
-                });
+        if(firstGame){
+            for (int row = 0; row < 6; row++) {
+                for (int col = 0; col < 6; col++) {
+                    TextField textField = cells[row][col];
+                    textField.textProperty().addListener((observable, oldValue, newValue) -> {
+                        verification(newValue, oldValue, textField);
+                    });
+                }
             }
         }
+        firstGame=false;
+
     }
 
     /**
@@ -289,16 +294,7 @@ public class MainMenuController implements SudokuInitializable {
      * <p>Typically called when the board is completed to clean up resources
      * and avoid triggering redundant validation checks.</p>
      */
-    private void removeListenerToTextFields() {
-        for (int row = 0; row < 6; row++) {
-            for (int col = 0; col < 6; col++) {
-                TextField textField = cells[row][col];
-                textField.textProperty().removeListener((observable, oldValue, newValue) -> {
-                    verification(newValue, oldValue, textField);
-                });
-            }
-        }
-    }
+
 
     /**
      * Validates a player's input whenever the text of a {@link TextField}
@@ -321,44 +317,44 @@ public class MainMenuController implements SudokuInitializable {
      * @param textField    the {@link TextField} whose value changed
      */
     private void verification(String userInput, String oldUserInput, TextField textField) {
-        if (newGame) {
+        List<Integer> coordinatesTextField = getCoordinatestextField(textField);
+        int rowTextField    = coordinatesTextField.get(0);
+        int columnTextField = coordinatesTextField.get(1);
 
-            List<Integer> coordinatesTextField = getCoordinatestextField(textField);
-            int rowTextField    = coordinatesTextField.get(0);
-            int columnTextField = coordinatesTextField.get(1);
-
-            if (userInput.equals("")) {
-                labelText.setText("");
-                modelSudoku.setConfirmedStateOfCell(columnTextField,rowTextField,false);
-                textField.setStyle(cellsStyle[rowTextField][columnTextField]);
-                List<List<Integer>> repeatedValidCells=modelSudoku.getRepeatedValidCells(oldUserInput, columnTextField, rowTextField, getMatrixValueCells());
-                if(!repeatedValidCells.isEmpty()){
-                    for(List<Integer> c:repeatedValidCells){
-                        editInterfaceDependingOnInputValidation("invalid number", false, cells[c.get(0)][c.get(1)]);
-                    }
+        if (userInput.isEmpty()&& !labelText.getText().equals("Type a number between 1 and 6")) {
+            labelText.setText("");
+            modelSudoku.setConfirmedStateOfCell(columnTextField,rowTextField,false);
+            textField.setStyle(cellsStyle[rowTextField][columnTextField]);
+            printBoard(getMatrixValueCells());
+            List<List<Integer>> repeatedValidCells=modelSudoku.getRepeatedValidCells(oldUserInput, columnTextField, rowTextField, getMatrixValueCells());
+            if(!repeatedValidCells.isEmpty()){
+                for(List<Integer> c:repeatedValidCells){
+                    editInterfaceDependingOnInputValidation("", true, cells[c.get(0)][c.get(1)]);
                 }
             }
-            else if (!modelSudoku.isNumberOneToSix(userInput)) {
-                labelText.setText("Type a number 1-6");
-                labelText.setStyle("-fx-text-fill: #69261C;");
-                textField.setText("");
-            }
-            else if (!modelSudoku.getConfirmedStateOfCell(columnTextField,rowTextField)) {
-
-                if (modelSudoku.sameNumberInSameColumn(userInput, columnTextField, rowTextField, getMatrixValueCells()) != -1) {
-                    editInterfaceDependingOnInputValidation("This number is in the column already", false, textField);
-                } else if (modelSudoku.sameNumberInSameRow(userInput, columnTextField, rowTextField, getMatrixValueCells()) != -1) {
-                    editInterfaceDependingOnInputValidation("This number is in the row already", false, textField);
-                } else if (!modelSudoku.sameNumberInSameBlock(userInput, columnTextField, rowTextField, getMatrixValueCells()).isEmpty()) {
-                    editInterfaceDependingOnInputValidation("This number is in the block already", false, textField);
-                } else {
-                    modelSudoku.setConfirmedStateOfCell(columnTextField,rowTextField,true);
-                    labelText.setText("");
-                }
-            }
-            if (modelSudoku.isTheSudokuCompleted()) editInterfaceSudokuCompleted();
         }
+        else if (!modelSudoku.isNumberOneToSix(userInput)) {
+            labelText.setText("Type a number between 1 and 6");
+            labelText.setStyle("-fx-text-fill: #8e2115;");
+            textField.setText("");
+        }
+        else if (!modelSudoku.getConfirmedStateOfCell(columnTextField,rowTextField)) {
+
+            if (modelSudoku.sameNumberInSameColumn(userInput, columnTextField, rowTextField, getMatrixValueCells()) != -1) {
+                editInterfaceDependingOnInputValidation("This number is in the column already", false, textField);
+            } else if (modelSudoku.sameNumberInSameRow(userInput, columnTextField, rowTextField, getMatrixValueCells()) != -1) {
+                editInterfaceDependingOnInputValidation("This number is in the row already", false, textField);
+            } else if (!modelSudoku.sameNumberInSameBlock(userInput, columnTextField, rowTextField, getMatrixValueCells()).isEmpty()) {
+                editInterfaceDependingOnInputValidation("This number is in the block already", false, textField);
+            } else {
+                modelSudoku.setConfirmedStateOfCell(columnTextField,rowTextField,true);
+                labelText.setText("");
+            }
+        }
+        if (modelSudoku.isTheSudokuCompleted()) editInterfaceSudokuCompleted();
+        modelSudoku.printBoardBool();
     }
+
 
     /**
      * Clears the text of every {@link TextField} in the 6×6 grid.
@@ -419,11 +415,11 @@ public class MainMenuController implements SudokuInitializable {
     private void editInterfaceDependingOnInputValidation(String text, boolean isValidInput, TextField textField) {
         if (isValidInput) {
             labelText.setText(text);
-            labelText.setStyle("-fx-text-fill: #185723;");
+            labelText.setStyle("-fx-text-fill: #278438;");
             textField.setStyle(getInitialStyleOfTextField(textField));
         } else {
             labelText.setText(text);
-            labelText.setStyle("-fx-text-fill: #69261C;");
+            labelText.setStyle("-fx-text-fill: #8e2115;");
             textField.setStyle(textField.getStyle() + "-fx-background-color: #69261C;");
         }
     }
@@ -448,7 +444,7 @@ public class MainMenuController implements SudokuInitializable {
      */
     private void editInterfaceSudokuCompleted() {
         labelText.setText("You Did it, The sudoku is completed");
-        labelText.setStyle("-fx-text-fill: #185723;");
+        labelText.setStyle("-fx-text-fill: #278438;");
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 6; col++) {
                 cells[row][col].setDisable(true);
@@ -456,8 +452,6 @@ public class MainMenuController implements SudokuInitializable {
         }
         clueID.setVisible(false);
         playID.setVisible(true);
-        newGame = false;
-        removeListenerToTextFields();
     }
     private ArrayList<ArrayList<String>> getMatrixValueCells(){
         ArrayList<ArrayList<String>> matrixValueCells = new ArrayList<>(6);
@@ -465,7 +459,8 @@ public class MainMenuController implements SudokuInitializable {
             ArrayList<String> row = new ArrayList<>(6);
             for (int j = 0; j < 6; j++) {
                 String valueCell=cells[i][j].getText();
-                row.add((valueCell!="")?valueCell:"0");
+                if(valueCell.isEmpty()) row.add("0");
+                else row.add(valueCell);
             }
             matrixValueCells.add(row);
         }
@@ -485,5 +480,23 @@ public class MainMenuController implements SudokuInitializable {
         }
         return coordinates;
 
+
+    }
+
+    public void printBoard(ArrayList<ArrayList<String>> matrix) {
+        System.out.println("--- SUDOKU BOARD ---");
+        for (int i = 0; i < 6; i++) {
+            if (i > 0 && i % 2 == 0) {
+                System.out.println("---------------------");
+            }
+            for (int j = 0; j < 6; j++) {
+                if (j > 0 && j % 3 == 0) {
+                    System.out.print("| ");
+                }
+                System.out.print(matrix.get(i).get(j) + " ");
+            }
+            System.out.println();
+        }
+        System.out.println("---------------------\n");
     }
 }

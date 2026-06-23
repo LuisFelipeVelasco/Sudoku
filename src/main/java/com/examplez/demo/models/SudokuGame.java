@@ -137,6 +137,7 @@ public class SudokuGame implements SudokuInitializable {
 
                 if (solve(row, col + 1)) {
                     return true;
+
                 }
 
                 // Backtrack: undo the placement
@@ -204,8 +205,13 @@ public class SudokuGame implements SudokuInitializable {
      */
     private boolean isValidCell(int row, int col, String num,ArrayList<ArrayList<String>> cell) {
         for (int i = 0; i < size; i++) {
-            if (cell.get(row).get(i) == num) return false; // Row conflict
-            if (cell.get(i).get(col) == num) return false; // Column conflict
+            if (Objects.equals(cell.get(row).get(i), num) && i!=col) {
+                System.out.println("hola1");
+                return false;
+            } // Row conflict
+            if (Objects.equals(cell.get(i).get(col), num)&& i!=row) {
+                System.out.println("hola2");
+                return false;} // Column conflict
         }
 
         // Sub-block check (2 rows × 3 columns)
@@ -214,7 +220,9 @@ public class SudokuGame implements SudokuInitializable {
 
         for (int r = boxRowStart; r < boxRowStart + 2; r++) {
             for (int c = boxColStart; c < boxColStart + 3; c++) {
-                if (cell.get(r).get(c) == num) return false;
+                if (Objects.equals(cell.get(r).get(c), num) && (r!=row || c!=col )) {
+
+                    return false;};
             }
         }
 
@@ -253,13 +261,13 @@ public class SudokuGame implements SudokuInitializable {
         List<List<Integer>> repeatedValidCells = new ArrayList<>(List.of());
 
         if (rowValueRepeated != -1 && !getConfirmedStateOfCell(column,rowValueRepeated)) {
-            if (isValidCell(rowValueRepeated, column, cells.get(rowValueRepeated).get(column),cells)) {
+            if (isValidCell(rowValueRepeated, column, value,cells)) {
                 setConfirmedStateOfCell(column,rowValueRepeated,true);
                 repeatedValidCells.add(List.of(rowValueRepeated,column));
             }
         }
         if (columnValueRepeated != -1 && !getConfirmedStateOfCell(columnValueRepeated,row)) {
-            if (isValidCell(row, columnValueRepeated, cells.get(row).get(columnValueRepeated), cells)) {
+            if (isValidCell(row, columnValueRepeated, value, cells)) {
                 setConfirmedStateOfCell(columnValueRepeated,row,true);
                 repeatedValidCells.add(List.of(row,columnValueRepeated));
             }
@@ -267,9 +275,9 @@ public class SudokuGame implements SudokuInitializable {
         if (!blockValueRepeated.isEmpty()) {
             int rowValueBlockRepeated = blockValueRepeated.get(0);
             int columnValueBlockRepeated = blockValueRepeated.get(1);
-            if (isValidCell(rowValueBlockRepeated, columnValueBlockRepeated, cells.get(rowValueBlockRepeated).get(columnValueBlockRepeated), cells) && !getConfirmedStateOfCell(columnValueBlockRepeated,rowValueBlockRepeated)) {
+            if (isValidCell(rowValueBlockRepeated, columnValueBlockRepeated, value, cells) && !getConfirmedStateOfCell(columnValueBlockRepeated,rowValueBlockRepeated)) {
                 setConfirmedStateOfCell(columnValueBlockRepeated,rowValueBlockRepeated,true);
-                repeatedValidCells.add(List.of(rowValueRepeated,columnValueRepeated));
+                repeatedValidCells.add(List.of(rowValueBlockRepeated,columnValueBlockRepeated));
             }
         }
         return repeatedValidCells;
@@ -313,7 +321,7 @@ public class SudokuGame implements SudokuInitializable {
         List<Integer> coordinates = new ArrayList<>();
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 6; col++) {
-                if (Objects.equals(cells.get(row).get(col), "")) {
+                if (Objects.equals(cells.get(row).get(col), "0")) {
                     coordinates.add(row);
                     coordinates.add(col);
                     return coordinates;
@@ -331,16 +339,16 @@ public class SudokuGame implements SudokuInitializable {
      *
      * @return {@code true} if clue distribution paths remain unlocked; {@code false} if 35 fields resolve as finalized
      */
-    public boolean isPossibleGiveClue() {
+    public boolean isPossibleGiveClue(ArrayList<ArrayList<String>> cells) {
         int numberCorrectcells = 0;
+        int numberFilledCells=0;
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 6; col++) {
-                if (confirmedCells.get(row).get(col)) {
-                    numberCorrectcells++;
-                }
+                if (confirmedCells.get(row).get(col)) numberCorrectcells++;
+                if(!Objects.equals(cells.get(row).get(col),"0")) numberFilledCells++;
             }
         }
-        return numberCorrectcells != 35;
+        return numberCorrectcells != 35 && numberFilledCells!=36;
     }
 
     // -----------------------------------------------------------------------
