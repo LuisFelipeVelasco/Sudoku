@@ -52,10 +52,6 @@ The project follows a strict Model–View–Controller split enforced by JavaFX'
 5. **Dispenses clues on demand** — the Clue button asks the model for the first empty cell, reveals its correct value, and re-checks surrounding cells for newly created conflicts.
 6. **Detects completion** by querying `SudokuGame.isTheSudokuCompleted()` after every valid entry.
 
-> 💡 **Paste a screenshot here showing the board mid-game with a conflict highlighted in red.**
-
-> 🎬 *Example output: a 6×6 grid with some cells locked as clues (disabled), some filled correctly, and one highlighted cell showing a row-conflict warning.*
-
 ### 🧩 Algorithms & Design Decisions
 
 #### Board Generation — Randomized Backtracking
