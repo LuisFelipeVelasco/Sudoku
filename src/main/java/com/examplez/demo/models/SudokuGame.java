@@ -1,7 +1,6 @@
 package com.examplez.demo.models;
 
 import com.examplez.demo.SudokuInitializable;
-import com.examplez.demo.controllers.MainMenuController;
 import javafx.scene.control.TextField;
 
 import java.util.ArrayList;
@@ -31,7 +30,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author jeronimo rojas imbachi
  * @author Luis Felipe Velasco
  * @version 1.1
- * @see MainMenuController
  */
 public class SudokuGame implements SudokuInitializable {
 
