@@ -175,14 +175,44 @@ public class SudokuGame implements SudokuInitializable {
         }
     }
 
+    /**
+     * Returns the full 6×6 confirmed-cells mask for the current game session.
+     *
+     * <p>Each element is {@code true} when the corresponding cell holds a
+     * finalized or initially revealed value, and {@code false} while the cell
+     * is still editable or empty.</p>
+     *
+     * @return the internal {@link ArrayList} of boolean rows representing the
+     *         confirmed state of every board position
+     */
     public ArrayList<ArrayList<Boolean>> getConfirmedCells(){
         return this.confirmedCells;
     }
 
+    /**
+     * Updates the confirmed state of a single cell in the tracking mask.
+     *
+     * <p>Setting a cell to {@code true} marks it as finalized (correctly placed
+     * or revealed as a clue). Setting it to {@code false} marks it as
+     * unresolved or conflicting.</p>
+     *
+     * @param column         zero-based column index of the target cell
+     * @param row            zero-based row index of the target cell
+     * @param confirmedState {@code true} to finalize the cell; {@code false}
+     *                       to revert it to an unresolved state
+     */
     public void setConfirmedStateOfCell(int column,int row, boolean confirmedState){
         confirmedCells.get(row).set(column,confirmedState);
     }
 
+    /**
+     * Returns the confirmed state of a single cell.
+     *
+     * @param column zero-based column index of the target cell
+     * @param row    zero-based row index of the target cell
+     * @return {@code true} if the cell is finalized or was revealed as a clue;
+     *         {@code false} if it is still editable or unresolved
+     */
     public boolean getConfirmedStateOfCell(int column,int row){
         return confirmedCells.get(row).get(column);
     }
@@ -198,10 +228,13 @@ public class SudokuGame implements SudokuInitializable {
      * calculated via floor coordinates {@code (row/2)*2} and {@code (col/3)*3}.</li>
      * </ol>
      *
-     * @param row zero-based index of the target placement row
-     * @param col zero-based index of the target placement column
-     * @param num candidate value (1–6) being evaluated for safety
-     * @return {@code true} if the integer satisfies all solution criteria; {@code false} if a rule conflict occurs
+     * @param row  zero-based index of the target placement row
+     * @param col  zero-based index of the target placement column
+     * @param num  candidate value (1–6) being evaluated for safety
+     * @param cell the 6×6 string matrix to validate against (either the
+     *             solution board or the live UI state)
+     * @return {@code true} if the integer satisfies all solution criteria;
+     *         {@code false} if a rule conflict occurs
      */
     private boolean isValidCell(int row, int col, String num,ArrayList<ArrayList<String>> cell) {
         for (int i = 0; i < size; i++) {
@@ -230,6 +263,23 @@ public class SudokuGame implements SudokuInitializable {
     }
 
 
+    /**
+     * Identifies cells that conflict with a newly placed value and marks them
+     * as unconfirmed.
+     *
+     * <p>Checks the same row, column, and 2×3 sub-block for occurrences of
+     * {@code value} that are not at the origin coordinate. For each conflicting
+     * cell found, its confirmed state is set to {@code false} so the UI can
+     * highlight it as invalid.</p>
+     *
+     * @param value  the digit string (1–6) that was just placed on the board
+     * @param column zero-based column index of the newly placed value
+     * @param row    zero-based row index of the newly placed value
+     * @param cells  the current 6×6 string value matrix of the board
+     * @return a list of {@code [row, col]} coordinate pairs for every cell
+     *         whose value now conflicts with the placed digit; empty if no
+     *         conflicts exist
+     */
     public List<List<Integer>> getCoordinatesRepeatedInvalidCells(String value, int column, int row , ArrayList<ArrayList<String>> cells ) {
         int rowValueRepeated    = sameNumberInSameColumn(value, column, row, cells);
         int columnValueRepeated = sameNumberInSameRow(value, column, row, cells);
@@ -254,6 +304,26 @@ public class SudokuGame implements SudokuInitializable {
     }
 
 
+    /**
+     * Identifies previously conflicting cells that become valid after a value
+     * is removed from the board, and marks them as confirmed.
+     *
+     * <p>When a player deletes an entry, other cells sharing the same row,
+     * column, or sub-block may no longer have a conflict. This method
+     * re-evaluates those neighbours: if a neighbour's value now satisfies all
+     * Sudoku constraints and is not already confirmed, its confirmed state is
+     * updated to {@code true}.</p>
+     *
+     * @param value  the digit string (1–6) that was just removed from the board
+     * @param column zero-based column index of the removed value
+     * @param row    zero-based row index of the removed value
+     * @param cells  the current 6×6 string value matrix of the board
+     *               (the cell at {@code [row][column]} should already reflect
+     *               the deletion, i.e. contain {@code "0"})
+     * @return a list of {@code [row, col]} coordinate pairs for every
+     *         neighbour cell that is now considered valid; empty if none
+     *         transitioned to a valid state
+     */
     public List<List<Integer>> getRepeatedValidCells(String value, int column, int row, ArrayList<ArrayList<String>> cells) {
         int rowValueRepeated = sameNumberInSameColumn(value, column, row, cells);
         int columnValueRepeated = sameNumberInSameRow(value, column, row, cells);
@@ -358,11 +428,11 @@ public class SudokuGame implements SudokuInitializable {
     /**
      * Validates that an incoming text string contains exactly one digital character matching numerical scale values 1 to 6.
      *
-     * @param user_input character string variable evaluated from UI interaction nodes
+     * @param value character string variable evaluated from UI interaction nodes
      * @return {@code true} if text content matches single character regex bounds {@code [1-6]}; {@code false} otherwise
      */
-    public boolean isNumberOneToSix(String user_input) {
-        return user_input.matches("[1-6]");
+    public boolean isNumberOneToSix(String value) {
+        return value.matches("[1-6]");
     }
 
     /**
@@ -371,16 +441,16 @@ public class SudokuGame implements SudokuInitializable {
      * <p>Iterates across column tracks while ignoring origin coordinate row locations to track
      * structural rule conflicts.</p>
      *
-     * @param user_input character value string searched across target track limits
+     * @param value character value string searched across target track limits
      * @param column     zero-based index coordinate of the target vertical track column line
      * @param row        zero-based source coordinate row index excluded from matching processes
      * @param cells     6×6 tracking interface grid container hosting live display {@link TextField} nodes
      * @return matching zero-based row index pointing to structural duplication location; {@code -1} if line remains safe
      */
-    public int sameNumberInSameColumn(String user_input, int column, int row, ArrayList<ArrayList<String>> cells) {
+    public int sameNumberInSameColumn(String value, int column, int row, ArrayList<ArrayList<String>> cells) {
         for (int i = 0; i <= 5; i++) {
-            String value_block = cells.get(i).get(column);
-            if (value_block.equals(user_input) && i != row) {
+            String valueBlock = cells.get(i).get(column);
+            if (valueBlock.equals(value) && i != row) {
                 return i;
             }
         }
@@ -393,16 +463,16 @@ public class SudokuGame implements SudokuInitializable {
      * <p>Iterates across row tracks while ignoring origin coordinate column locations to track
      * structural rule conflicts.</p>
      *
-     * @param user_input character value string searched across target track limits
+     * @param value character value string searched across target track limits
      * @param column     zero-based source coordinate column index excluded from matching processes
      * @param row        zero-based index coordinate of the target horizontal track row line
      * @param cells     6×6 tracking interface grid container hosting live display {@link TextField} nodes
      * @return matching zero-based column index pointing to structural duplication location; {@code -1} if line remains safe
      */
-    public int sameNumberInSameRow(String user_input, int column, int row, ArrayList<ArrayList<String>> cells) {
+    public int sameNumberInSameRow(String value, int column, int row, ArrayList<ArrayList<String>> cells) {
         for (int i = 0; i <= 5; i++) {
-            String value_block = cells.get(row).get(i);
-            if (value_block.equals(user_input) && i != column) {
+            String valueBlock = cells.get(row).get(i);
+            if (valueBlock.equals(value) && i != column) {
                 return i;
             }
         }
@@ -414,20 +484,20 @@ public class SudokuGame implements SudokuInitializable {
      *
      * <p>Skips calculation logic on the active origin coordinate block to find matching duplication anomalies.</p>
      *
-     * @param user_input string input value string searched across local boundary arrays
+     * @param value string input value string searched across local boundary arrays
      * @param column     zero-based lookup source element coordinate index column position
      * @param row        zero-based lookup source element coordinate index row position
      * @param cells     6×6 tracking interface grid container hosting live display {@link TextField} nodes
      * @return coordinate container pair matching {@code [row, col]} pinpointing conflict origin; empty list if safe
      */
-    public List<Integer> sameNumberInSameBlock(String user_input, int column, int row, ArrayList<ArrayList<String>> cells) {
+    public List<Integer> sameNumberInSameBlock(String value, int column, int row, ArrayList<ArrayList<String>> cells) {
         int startRow = (row / 2) * 2;
         int startCol = (column / 3) * 3;
         List<Integer> coordinates = new ArrayList<>();
         for (int i = startRow; i < startRow + 2; i++) {
             for (int j = startCol; j < startCol + 3; j++) {
-                String value_SubBlock = cells.get(i).get(j);
-                if (value_SubBlock.equals(user_input) && i != row && j != column) {
+                String valueSubBlock = cells.get(i).get(j);
+                if (valueSubBlock.equals(value) && i != row && j != column) {
                     coordinates.add(i);
                     coordinates.add(j);
                     return coordinates;
