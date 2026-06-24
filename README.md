@@ -1,2 +1,200 @@
-# Sudoku
-Sodoku 6x6 game
+# 🎲 6×6 Sudoku Game — JavaFX
+
+> **A fully playable 6×6 Sudoku puzzle built with JavaFX and pure Java — featuring real-time input validation, a backtracking board generator, and a clue system, all wired together through a clean MVC architecture.**
+
+---
+
+## 🎯 Purpose
+
+Classic Sudoku engines are a rich ground for applying core OOP patterns: how do you separate game logic from presentation, enforce constraints in real time without coupling the model to the UI, and design a lifecycle that a framework's loader can drive? This project tackles those questions in a 6×6 variant:
+
+- 🧩 **Board Generation** (`SudokuGame.java`) — Given a blank 6×6 grid, produce a fully solved, randomized puzzle using recursive backtracking, then select an initial set of revealed cells as starting clues.
+- 🖼️ **Interactive UI** (`MainMenuController.java` + `main-menu-view.fxml`) — Render the board as a grid of editable `TextField` nodes, validate every keystroke in real time, and give the player live feedback on row, column, and sub-block conflicts.
+
+Both components share the same lifecycle contract: they implement the `SudokuInitializable` interface, which enforces a single `initialize()` entry point for setup.
+
+---
+
+## 🗂️ Project Structure
+
+```
+demo/
+│
+├── src/main/java/com/examplez/demo/
+│   ├── Launcher.java                          # 🚀 Application entry point
+│   ├── GameLauncher.java                      # 🪟 JavaFX Application subclass
+│   ├── SudokuInitializable.java               # 📐 Shared lifecycle interface
+│   │
+│   ├── controllers/
+│   │   └── MainMenuController.java            # 🎮 FXML controller — UI & validation
+│   │
+│   └── models/
+│       └── SudokuGame.java                    # 🧠 Game logic — generation & rules
+│
+├── src/main/resources/com/examplez/demo/
+│   └── main-menu-view.fxml                    # 🖌️ Board layout and controls
+│
+└── pom.xml                                    # 🔧 Maven build — JavaFX 21, Java 17
+```
+
+---
+
+## 🧠 Architecture — MVC Design
+
+### What It Does
+
+The project follows a strict Model–View–Controller split enforced by JavaFX's FXML loader:
+
+1. **Generates a valid 6×6 board** by running randomized backtracking inside `SudokuGame.initialize()`.
+2. **Selects starting clues** — one random cell per 2×3 sub-block — and marks them as locked in the `confirmedCells` mask.
+3. **Renders the board** in `MainMenuController`, populating the `TextField[6][6]` grid from the model and disabling locked cells.
+4. **Validates input live** by attaching a `textProperty` listener to every editable cell; each keystroke checks row, column, and sub-block constraints and highlights conflicts immediately.
+5. **Dispenses clues on demand** — the Clue button asks the model for the first empty cell, reveals its correct value, and re-checks surrounding cells for newly created conflicts.
+6. **Detects completion** by querying `SudokuGame.isTheSudokuCompleted()` after every valid entry.
+
+> 💡 **Paste a screenshot here showing the board mid-game with a conflict highlighted in red.**
+
+> 🎬 *Example output: a 6×6 grid with some cells locked as clues (disabled), some filled correctly, and one highlighted cell showing a row-conflict warning.*
+
+### 🧩 Algorithms & Design Decisions
+
+#### Board Generation — Randomized Backtracking
+
+| Step | Description |
+|---|---|
+| 1 | Start at cell (0, 0) with the board pre-filled with zeros |
+| 2 | Shuffle `{1, 2, 3, 4, 5, 6}` to randomize candidate order |
+| 3 | Try each candidate: if it passes row, column, and sub-block constraints, place it |
+| 4 | Recurse into the next cell (wrapping to the next row at column 6) |
+| 5 | If no candidate fits, reset the cell to `"0"` and return `false` to trigger backtracking |
+| 6 | When row 6 is reached, the board is fully solved — return `true` |
+
+#### Clue Selection — Sub-Block Distribution
+
+| Step | Description |
+|---|---|
+| 1 | Iterate over the six 2×3 sub-blocks (top-left corners at rows 0, 2, 4 and columns 0, 3) |
+| 2 | Within each sub-block, randomly select one cell using `ThreadLocalRandom` |
+| 3 | Mark it `true` in `confirmedCells` — it will be revealed as a starting hint |
+
+#### Real-Time Validation — Three-Plane Conflict Check
+
+| Plane | Method | Description |
+|---|---|---|
+| Row | `sameNumberInSameRow` | Scans the cell's row for a duplicate of the typed value |
+| Column | `sameNumberInSameColumn` | Scans the cell's column for a duplicate |
+| Sub-block | `sameNumberInSameBlock` | Scans the enclosing 2×3 block for a duplicate |
+
+If a conflict is found in any plane, `getCoordinatesRepeatedInvalidCells` returns the coordinates of the offending cell, and the controller highlights it.
+
+### Pipeline
+
+```
+User clicks Play
+    │
+    └──► SudokuGame.initialize()
+              │
+              ├──► solve(0, 0) — Randomized backtracking → Fully solved board
+              └──► chooseCluesToShow() → confirmedCells mask (one per sub-block)
+                        │
+                        └──► MainMenuController.showBoard()
+                                  │
+                                  ├──► Locked cells: setText + setDisable(true)
+                                  └──► Editable cells: setDisable(false) + attach listener
+                                            │
+                                            └──► On each keystroke:
+                                                      ├──► Empty? → clear highlights, re-validate neighbors
+                                                      ├──► Not 1–6? → show format error, revert text
+                                                      └──► Valid digit? → check row / col / block
+                                                                ├──► Conflict found → highlight offenders
+                                                                ├──► No conflict → check board completion
+                                                                └──► Completed → show win message
+```
+
+---
+
+## 🎮 Features
+
+### Clue System
+
+When the player clicks **Clue**, the controller calls `SudokuGame.giveClue()`, which scans `confirmedCells` to find the first unconfirmed empty cell, reveals its correct value, and disables it. The clue cap sits at 35 confirmed cells (out of 36); attempting to exceed it displays a warning message. After each clue is revealed, nearby cells are re-validated so any conflicts it creates are surfaced immediately.
+
+### Style Preservation
+
+Each `TextField`'s original CSS style string is cached in `cellsStyle[row][col]` during `initialize()`. This snapshot is restored before any highlight is applied, preventing color strings from accumulating across successive validation passes.
+
+### Lifecycle Guard (`firstGame` / `lockedCells`)
+
+Listeners are registered only once — on the first call to `setListenerToTextFields()` — guarded by a `firstGame` flag. This prevents duplicate listeners from stacking across multiple Play clicks within the same session.
+
+---
+
+## 🛠️ Technologies & Libraries
+
+| Library / Tool | Role |
+|---|---|
+| `JavaFX 21` (`javafx-controls`, `javafx-fxml`) | UI framework — scene graph, FXML loading, event handling |
+| `Java 17` | Language baseline — records, pattern matching, module system |
+| `Maven` + `javafx-maven-plugin 0.0.8` | Build tool and JavaFX runner (`mvn clean javafx:run`) |
+| `JUnit Jupiter 5.12.1` | Unit testing (test scope) |
+
+---
+
+## ⚙️ Setup
+
+### Prerequisites
+
+- Java **17 or higher**
+- Maven **3.8+**
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/LuisFelipeVelasco/<repo-name>.git
+cd <repo-name>
+```
+
+### 2. Run the game
+
+```bash
+mvn clean javafx:run
+```
+
+The game window opens at a fixed **550×560 px** viewport. No additional configuration is required.
+
+### 3. Run tests
+
+```bash
+mvn test
+```
+
+---
+
+## 📚 Learnings
+
+**MVC with JavaFX FXML**
+- The FXML loader instantiates the controller and injects `@FXML` fields before handing control to `initialize()`. This means any setup that references injected nodes must happen there — not in a constructor.
+- Separating the model (`SudokuGame`) from the controller (`MainMenuController`) kept the constraint logic testable in isolation and made the UI layer responsible only for presentation and event routing.
+
+**Style Accumulation Bug**
+- Applying styles by appending strings (`setStyle(getStyle() + newStyle)`) causes styles to stack across calls, producing unpredictable results. Caching the original style string at init time and restoring it before each highlight is the correct pattern.
+
+**Listener Lifecycle**
+- `textProperty` listeners survive `setText()` calls — including programmatic ones triggered by `showBoard()` and `showClue()`. Guarding listener registration with a flag prevents redundant firings and cascading validation noise during board setup.
+
+**Backtracking Termination**
+- The recursive solver terminates at row index 6 (one past the last row), not when the last cell is filled. This boundary condition must be explicit; checking `row == size` before any cell access avoids an `IndexOutOfBoundsException`.
+
+**Interface vs Abstract Class**
+- Using `SudokuInitializable` as a `interface` rather than an abstract class lets both `SudokuGame` (pure model) and `MainMenuController` (JavaFX controller) share the same lifecycle contract without forcing a common superclass — keeping the inheritance hierarchy flat and unambiguous.
+
+---
+
+## 🚧 Known Limitations & Future Improvements
+
+- The `firstGame` flag prevents duplicate listeners across Play clicks but ties listener lifecycle to instance lifetime; a proper teardown-and-reattach pattern would be cleaner.
+- Board generation uses unguarded random initialization (`ThreadLocalRandom`); adding a seed option would make puzzles reproducible for testing.
+- The clue system scans from cell (0,0) linearly; a smarter strategy could select the empty cell that produces the most instructive reveal for the player.
+- The 6×6 variant is hard-coded via `final int size = 6`; the backtracking solver is general enough to support 9×9 with sub-block dimension parameters, which would make a natural extension.
+- No persistent high score, timer, or difficulty selection — all natural additions for a second iteration.
+- The `SudokuGame` model still holds a direct import of `MainMenuController` (`import com.examplez.demo.controllers.MainMenuController`), creating a circular dependency between layers that should be broken by removing the import.
