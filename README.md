@@ -52,6 +52,9 @@ The project follows a strict Model–View–Controller split enforced by JavaFX'
 5. **Dispenses clues on demand** — the Clue button asks the model for the first empty cell, reveals its correct value, and re-checks surrounding cells for newly created conflicts.
 6. **Detects completion** by querying `SudokuGame.isTheSudokuCompleted()` after every valid entry.
 
+> 💡 **Paste a screenshot here showing the board mid-game with a conflict highlighted in red.**
+
+> 🎬 *Example output: a 6×6 grid with some cells locked as clues (disabled), some filled correctly, and one highlighted cell showing a row-conflict warning.*
 
 ### 🧩 Algorithms & Design Decisions
 
@@ -147,8 +150,8 @@ Listeners are registered only once — on the first call to `setListenerToTextFi
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/LuisFelipeVelasco/<repo-name>.git
-cd <repo-name>
+git clone https://github.com/LuisFelipeVelasco/Sudoku.git
+cd Sudoku
 ```
 
 ### 2. Run the game
@@ -189,5 +192,9 @@ mvn test
 
 ## 🚧 Known Limitations & Future Improvements
 
+- The `firstGame` flag prevents duplicate listeners across Play clicks but ties listener lifecycle to instance lifetime; a proper teardown-and-reattach pattern would be cleaner.
+- Board generation uses unguarded random initialization (`ThreadLocalRandom`); adding a seed option would make puzzles reproducible for testing.
+- The clue system scans from cell (0,0) linearly; a smarter strategy could select the empty cell that produces the most instructive reveal for the player.
 - The 6×6 variant is hard-coded via `final int size = 6`; the backtracking solver is general enough to support 9×9 with sub-block dimension parameters, which would make a natural extension.
 - No persistent high score, timer, or difficulty selection — all natural additions for a second iteration.
+- The `SudokuGame` model still holds a direct import of `MainMenuController` (`import com.examplez.demo.controllers.MainMenuController`), creating a circular dependency between layers that should be broken by removing the import.
