@@ -328,13 +328,13 @@ public class SudokuGame implements SudokuInitializable {
         List<Integer> blockValueRepeated = sameNumberInSameBlock(value, column, row, cells);
         List<List<Integer>> repeatedValidCells = new ArrayList<>(List.of());
 
-        if (rowValueRepeated != -1 && !getConfirmedStateOfCell(column,rowValueRepeated)) {
+        if (rowValueRepeated != -1 ) {
             if (isValidCell(rowValueRepeated, column, value,cells)) {
                 setConfirmedStateOfCell(column,rowValueRepeated,true);
                 repeatedValidCells.add(List.of(rowValueRepeated,column));
             }
         }
-        if (columnValueRepeated != -1 && !getConfirmedStateOfCell(columnValueRepeated,row)) {
+        if (columnValueRepeated != -1) {
             if (isValidCell(row, columnValueRepeated, value, cells)) {
                 setConfirmedStateOfCell(columnValueRepeated,row,true);
                 repeatedValidCells.add(List.of(row,columnValueRepeated));
@@ -343,7 +343,7 @@ public class SudokuGame implements SudokuInitializable {
         if (!blockValueRepeated.isEmpty()) {
             int rowValueBlockRepeated = blockValueRepeated.get(0);
             int columnValueBlockRepeated = blockValueRepeated.get(1);
-            if (isValidCell(rowValueBlockRepeated, columnValueBlockRepeated, value, cells) && !getConfirmedStateOfCell(columnValueBlockRepeated,rowValueBlockRepeated)) {
+            if (isValidCell(rowValueBlockRepeated, columnValueBlockRepeated, value, cells)) {
                 setConfirmedStateOfCell(columnValueBlockRepeated,rowValueBlockRepeated,true);
                 repeatedValidCells.add(List.of(rowValueBlockRepeated,columnValueBlockRepeated));
             }
