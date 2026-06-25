@@ -1,11 +1,14 @@
 package com.examplez.demo.controllers;
 
 import com.examplez.demo.SudokuInitializable;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import com.examplez.demo.models.SudokuGame;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,63 +33,20 @@ import java.util.List;
 public class MainMenuController implements SudokuInitializable {
 
     // -----------------------------------------------------------------------
-    // FXML-injected TextField grid (rows 0-5, columns 0-5)
-    // -----------------------------------------------------------------------
-
-    /** Row 0, column 0. */ @FXML private TextField T00;
-    /** Row 0, column 1. */ @FXML private TextField T01;
-    /** Row 0, column 2. */ @FXML private TextField T02;
-    /** Row 0, column 3. */ @FXML private TextField T03;
-    /** Row 0, column 4. */ @FXML private TextField T04;
-    /** Row 0, column 5. */ @FXML private TextField T05;
-
-    /** Row 1, column 0. */ @FXML private TextField T10;
-    /** Row 1, column 1. */ @FXML private TextField T11;
-    /** Row 1, column 2. */ @FXML private TextField T12;
-    /** Row 1, column 3. */ @FXML private TextField T13;
-    /** Row 1, column 4. */ @FXML private TextField T14;
-    /** Row 1, column 5. */ @FXML private TextField T15;
-
-    /** Row 2, column 0. */ @FXML private TextField T20;
-    /** Row 2, column 1. */ @FXML private TextField T21;
-    /** Row 2, column 2. */ @FXML private TextField T22;
-    /** Row 2, column 3. */ @FXML private TextField T23;
-    /** Row 2, column 4. */ @FXML private TextField T24;
-    /** Row 2, column 5. */ @FXML private TextField T25;
-
-    /** Row 3, column 0. */ @FXML private TextField T30;
-    /** Row 3, column 1. */ @FXML private TextField T31;
-    /** Row 3, column 2. */ @FXML private TextField T32;
-    /** Row 3, column 3. */ @FXML private TextField T33;
-    /** Row 3, column 4. */ @FXML private TextField T34;
-    /** Row 3, column 5. */ @FXML private TextField T35;
-
-    /** Row 4, column 0. */ @FXML private TextField T40;
-    /** Row 4, column 1. */ @FXML private TextField T41;
-    /** Row 4, column 2. */ @FXML private TextField T42;
-    /** Row 4, column 3. */ @FXML private TextField T43;
-    /** Row 4, column 4. */ @FXML private TextField T44;
-    /** Row 4, column 5. */ @FXML private TextField T45;
-
-    /** Row 5, column 0. */ @FXML private TextField T50;
-    /** Row 5, column 1. */ @FXML private TextField T51;
-    /** Row 5, column 2. */ @FXML private TextField T52;
-    /** Row 5, column 3. */ @FXML private TextField T53;
-    /** Row 5, column 4. */ @FXML private TextField T54;
-    /** Row 5, column 5. */ @FXML private TextField T55;
-
-    // -----------------------------------------------------------------------
     // FXML-injected controls
     // -----------------------------------------------------------------------
 
     /** Button that requests a clue from the model. Visible only during a game. */
-    @FXML private Button clueID;
+    @FXML private Button buttonClue ;
 
     /** Button that starts a new game. Visible only on the start/end screen. */
-    @FXML private Button playID;
+    @FXML private Button buttonPlay;
 
     /** Status label shown below the board (feedback messages to the player). */
     @FXML private Label labelText;
+
+    /** Grid-Pane that store all the text-fields (cells) */
+    @FXML private GridPane gridPane;
 
     // -----------------------------------------------------------------------
     // Instance state
@@ -123,47 +83,26 @@ public class MainMenuController implements SudokuInitializable {
      * Called automatically by the JavaFX FXML loader after all
      * {@code @FXML} fields have been injected.
      *
-     * <p>Populates the {@link #cells} convenience array with references to
-     * the injected {@link TextField} nodes so that the rest of the controller
-     * can address cells by {@code [row][col]} index rather than by field
-     * name. Also caches their default visual styling in {@link #cellsStyle}.</p>
+     * <p>Initializes the {@link #cells} array by mapping the
+     * {@link TextField} nodes contained in the {@link #gridPane}
+     * to their corresponding row and column indices. The method
+     * also stores each cell's initial CSS style in
+     * {@link #cellsStyle} so it can be restored later if needed.</p>
      */
     public void initialize() {
-        cells[0][0]=T00; cells[0][1]=T01; cells[0][2]=T02;
-        cells[0][3]=T03; cells[0][4]=T04; cells[0][5]=T05;
+        ObservableList<Node> textFieldCells = gridPane.getChildren();
 
-        cells[1][0]=T10; cells[1][1]=T11; cells[1][2]=T12;
-        cells[1][3]=T13; cells[1][4]=T14; cells[1][5]=T15;
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                cells[i][j] = (TextField) textFieldCells.get(6 * i + j);
+            }
+        }
 
-        cells[2][0]=T20; cells[2][1]=T21; cells[2][2]=T22;
-        cells[2][3]=T23; cells[2][4]=T24; cells[2][5]=T25;
-
-        cells[3][0]=T30; cells[3][1]=T31; cells[3][2]=T32;
-        cells[3][3]=T33; cells[3][4]=T34; cells[3][5]=T35;
-
-        cells[4][0]=T40; cells[4][1]=T41; cells[4][2]=T42;
-        cells[4][3]=T43; cells[4][4]=T44; cells[4][5]=T45;
-
-        cells[5][0]=T50; cells[5][1]=T51; cells[5][2]=T52;
-        cells[5][3]=T53; cells[5][4]=T54; cells[5][5]=T55;
-
-        cellsStyle[0][0]=T00.getStyle(); cellsStyle[0][1]=T01.getStyle(); cellsStyle[0][2]=T02.getStyle();
-        cellsStyle[0][3]=T03.getStyle(); cellsStyle[0][4]=T04.getStyle(); cellsStyle[0][5]=T05.getStyle();
-
-        cellsStyle[1][0]=T10.getStyle(); cellsStyle[1][1]=T11.getStyle(); cellsStyle[1][2]=T12.getStyle();
-        cellsStyle[1][3]=T13.getStyle(); cellsStyle[1][4]=T14.getStyle(); cellsStyle[1][5]=T15.getStyle();
-
-        cellsStyle[2][0]=T20.getStyle(); cellsStyle[2][1]=T21.getStyle(); cellsStyle[2][2]=T22.getStyle();
-        cellsStyle[2][3]=T23.getStyle(); cellsStyle[2][4]=T24.getStyle(); cellsStyle[2][5]=T25.getStyle();
-
-        cellsStyle[3][0]=T30.getStyle(); cellsStyle[3][1]=T31.getStyle(); cellsStyle[3][2]=T32.getStyle();
-        cellsStyle[3][3]=T33.getStyle(); cellsStyle[3][4]=T34.getStyle(); cellsStyle[3][5]=T35.getStyle();
-
-        cellsStyle[4][0]=T40.getStyle(); cellsStyle[4][1]=T41.getStyle(); cellsStyle[4][2]=T42.getStyle();
-        cellsStyle[4][3]=T43.getStyle(); cellsStyle[4][4]=T44.getStyle(); cellsStyle[4][5]=T45.getStyle();
-
-        cellsStyle[5][0]=T50.getStyle(); cellsStyle[5][1]=T51.getStyle(); cellsStyle[5][2]=T52.getStyle();
-        cellsStyle[5][3]=T53.getStyle(); cellsStyle[5][4]=T54.getStyle(); cellsStyle[5][5]=T55.getStyle();
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                cellsStyle[i][j] = textFieldCells.get(6 * i + j).getStyle();
+            }
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -187,8 +126,8 @@ public class MainMenuController implements SudokuInitializable {
         modelSudoku.initialize();
         showBoard(modelSudoku.getConfirmedCells());
         setListenerToTextFields();
-        clueID.setVisible(true);
-        playID.setVisible(false);
+        buttonClue.setVisible(true);
+        buttonPlay.setVisible(false);
     }
 
     /**
@@ -422,8 +361,8 @@ public class MainMenuController implements SudokuInitializable {
                 cells[row][col].setDisable(true);
             }
         }
-        clueID.setVisible(false);
-        playID.setVisible(true);
+        buttonClue.setVisible(false);
+        buttonPlay.setVisible(true);
     }
     /**
      * Builds a 6×6 string matrix that mirrors the current text content of

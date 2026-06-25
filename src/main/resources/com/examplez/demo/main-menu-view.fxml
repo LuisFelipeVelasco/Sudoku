@@ -1,558 +1,230 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<!--
-  ╔══════════════════════════════════════════════════════════╗
-  ║  SUDOKU – Main Menu  |  Estilo Clásico / Brutalista      ║
-  ║  Paleta: pergamino oscuro · acento ámbar dorado          ║
-  ║  ─────────────────────────────────────────────────────── ║
-  ║  Fondo base   #1e1a0f   Tierra profunda                  ║
-  ║  Card tablero #2a2316   Madera oscura                    ║
-  ║  Celda A      #332b1a   Pergamino sombreado              ║
-  ║  Celda B      #261f10   Pergamino oscuro                 ║
-  ║  Acento       #c8923a   Ámbar / oro envejecido           ║
-  ║  Texto        #f0e6cc   Marfil cálido                    ║
-  ║  Muted        #8a7355   Tierra media                     ║
-  ║  ─────────────────────────────────────────────────────── ║
-  ║  UX: Aesthetic Effect · Von Restorff · Nielsen 1–10     ║
-  ╚══════════════════════════════════════════════════════════╝
--->
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="563.0" prefWidth="553.0" style="-fx-background-color: linear-gradient(to bottom, #1e1a0f 0%, #16120a 100%);" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.examplez.demo.controllers.MainMenuController">
 
-<Pane
-        maxHeight="-Infinity" maxWidth="-Infinity"
-        minHeight="-Infinity" minWidth="-Infinity"
-        prefHeight="563.0" prefWidth="553.0"
-        style="-fx-background-color: linear-gradient(to bottom, #1e1a0f 0%, #16120a 100%);"
-        xmlns="http://javafx.com/javafx/25"
-        xmlns:fx="http://javafx.com/fxml/1"
-        fx:controller="com.examplez.demo.controllers.MainMenuController">
+   <Rectangle arcHeight="6" arcWidth="6" height="328.0" layoutX="55.0" layoutY="90.0" style="          -fx-fill: #2a2316;          -fx-stroke: #c8923a;          -fx-stroke-width: 1.5;          -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.70), 22, 0.0, 0, 6);       " width="444.0" />
 
-   <!-- ══════════════════════════════════════════════════
-        CARD del tablero  — madera oscura con borde dorado
-        Aesthetic Effect: superficie que evoca calidez
-        Nielsen #1: contexto visual inmediato del espacio
-   ═══════════════════════════════════════════════════ -->
-   <Rectangle
-           layoutX="55.0" layoutY="90.0"
-           width="444.0" height="328.0"
-           arcWidth="6" arcHeight="6"
-           style="
-         -fx-fill: #2a2316;
-         -fx-stroke: #c8923a;
-         -fx-stroke-width: 1.5;
-         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.70), 22, 0.0, 0, 6);
-      "/>
+   <Rectangle arcHeight="4" arcWidth="4" height="314.0" layoutX="62.0" layoutY="97.0" style="          -fx-fill: transparent;          -fx-stroke: rgba(200,146,58,0.18);          -fx-stroke-width: 1;       " width="430.0" />
 
-   <!-- Línea interior decorativa — refuerza el marco -->
-   <Rectangle
-           layoutX="62.0" layoutY="97.0"
-           width="430.0" height="314.0"
-           arcWidth="4" arcHeight="4"
-           style="
-         -fx-fill: transparent;
-         -fx-stroke: rgba(200,146,58,0.18);
-         -fx-stroke-width: 1;
-      "/>
-
-   <!-- ══════════════════════════════════════════════════
-        TÍTULO
-        Von Restorff: único elemento con glow dorado cálido
-        Aesthetic Effect: espaciado generoso, presencia fuerte
-   ═══════════════════════════════════════════════════ -->
-   <Label
-           alignment="CENTER"
-           layoutX="14.0" layoutY="24.0"
-           prefHeight="50.0" prefWidth="523.0"
-           text="SUDOKU"
-           textAlignment="CENTER"
-           style="
-         -fx-text-fill: #f0e6cc;
-         -fx-effect: dropshadow(gaussian, rgba(200,146,58,0.60), 24, 0.35, 0, 0);
-      ">
+   <Label alignment="CENTER" layoutX="14.0" layoutY="24.0" prefHeight="50.0" prefWidth="523.0" style="          -fx-text-fill: #f0e6cc;          -fx-effect: dropshadow(gaussian, rgba(200,146,58,0.60), 24, 0.35, 0, 0);       " text="SUDOKU" textAlignment="CENTER">
       <font>
-         <Font name="Arial Bold" size="34.0"/>
+         <Font name="Arial Bold" size="34.0" />
       </font>
    </Label>
 
-   <!-- Ornamento: dos líneas flanqueando el título -->
-   <Rectangle
-           layoutX="68.0" layoutY="74.0"
-           width="148.0" height="1.5"
-           style="-fx-fill: linear-gradient(to right, transparent, #c8923a);"/>
-   <Rectangle
-           layoutX="338.0" layoutY="74.0"
-           width="148.0" height="1.5"
-           style="-fx-fill: linear-gradient(to left, transparent, #c8923a);"/>
+   <Rectangle height="1.5" layoutX="68.0" layoutY="74.0" style="-fx-fill: linear-gradient(to right, transparent, #c8923a);" width="148.0" />
+   <Rectangle height="1.5" layoutX="338.0" layoutY="74.0" style="-fx-fill: linear-gradient(to left, transparent, #c8923a);" width="148.0" />
 
-   <!-- ══════════════════════════════════════════════════
-        CELDAS 6×6
-        Dos tipos alternados por región 3×2:
-          Celda A (#332b1a + borde ámbar suave) → región "cálida"
-          Celda B (#261f10 + borde tierra tenue) → región "fría-cálida"
-        Nielsen #6: las regiones se leen sin esfuerzo
-        Aesthetic Effect: tonos tierra que invitan al reposo visual
-   ═══════════════════════════════════════════════════ -->
+   <GridPane fx:id="gridPane" hgap="4.0" layoutX="83.0" layoutY="104.0" vgap="4.0">
+      <columnConstraints>
+         <ColumnConstraints prefWidth="62.0" />
+         <ColumnConstraints prefWidth="62.0" />
+         <ColumnConstraints prefWidth="62.0" />
+         <ColumnConstraints prefWidth="62.0" />
+         <ColumnConstraints prefWidth="62.0" />
+         <ColumnConstraints prefWidth="62.0" />
+      </columnConstraints>
+      <rowConstraints>
+         <RowConstraints prefHeight="48.0" />
+         <RowConstraints prefHeight="48.0" />
+         <RowConstraints prefHeight="48.0" />
+         <RowConstraints prefHeight="48.0" />
+         <RowConstraints prefHeight="48.0" />
+         <RowConstraints prefHeight="48.0" />
+      </rowConstraints>
 
-   <!-- FILA 0 -->
-   <TextField fx:id="T00" alignment="CENTER" disable="true"
-              layoutX="83.0" layoutY="104.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T01" alignment="CENTER" disable="true"
-              layoutX="149.0" layoutY="104.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T02" alignment="CENTER" disable="true"
-              layoutX="215.0" layoutY="104.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T03" alignment="CENTER" disable="true"
-              layoutX="283.0" layoutY="104.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T04" alignment="CENTER" disable="true"
-              layoutX="349.0" layoutY="104.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T05" alignment="CENTER" disable="true"
-              layoutX="415.0" layoutY="104.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
+      <!-- ROW 0 -->
+      <TextField alignment="CENTER" disable="true" style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);" GridPane.columnIndex="0" GridPane.rowIndex="0">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField alignment="CENTER" disable="true" style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);" GridPane.columnIndex="1" GridPane.rowIndex="0">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField alignment="CENTER" disable="true" style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);" GridPane.columnIndex="2" GridPane.rowIndex="0">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField alignment="CENTER" disable="true" style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);" GridPane.columnIndex="3" GridPane.rowIndex="0">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField alignment="CENTER" disable="true" style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);" GridPane.columnIndex="4" GridPane.rowIndex="0">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField  alignment="CENTER" disable="true" style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);" GridPane.columnIndex="5" GridPane.rowIndex="0">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
 
-   <!-- FILA 1 -->
-   <TextField fx:id="T10" alignment="CENTER" disable="true"
-              layoutX="83.0" layoutY="156.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T11" alignment="CENTER" disable="true"
-              layoutX="149.0" layoutY="156.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T12" alignment="CENTER" disable="true"
-              layoutX="215.0" layoutY="156.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T13" alignment="CENTER" disable="true"
-              layoutX="283.0" layoutY="156.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T14" alignment="CENTER" disable="true"
-              layoutX="349.0" layoutY="156.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T15" alignment="CENTER" disable="true"
-              layoutX="415.0" layoutY="156.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
+      <!-- ROW 1 -->
+      <TextField  alignment="CENTER" disable="true" style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);" GridPane.columnIndex="0" GridPane.rowIndex="1">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField  alignment="CENTER" disable="true" style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField alignment="CENTER" disable="true" style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);" GridPane.columnIndex="2" GridPane.rowIndex="1">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField alignment="CENTER" disable="true" style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);" GridPane.columnIndex="3" GridPane.rowIndex="1">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField alignment="CENTER" disable="true" style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);" GridPane.columnIndex="4" GridPane.rowIndex="1">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField alignment="CENTER" disable="true" style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);" GridPane.columnIndex="5" GridPane.rowIndex="1">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
 
-   <!-- FILA 2 -->
-   <TextField fx:id="T20" alignment="CENTER" disable="true"
-              layoutX="83.0" layoutY="208.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T21" alignment="CENTER" disable="true"
-              layoutX="149.0" layoutY="208.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T22" alignment="CENTER" disable="true"
-              layoutX="215.0" layoutY="208.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T23" alignment="CENTER" disable="true"
-              layoutX="283.0" layoutY="208.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T24" alignment="CENTER" disable="true"
-              layoutX="349.0" layoutY="208.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T25" alignment="CENTER" disable="true"
-              layoutX="415.0" layoutY="208.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
+      <!-- ROW 2 -->
+      <TextField  alignment="CENTER" disable="true" style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);" GridPane.columnIndex="0" GridPane.rowIndex="2">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField  alignment="CENTER" disable="true" style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);" GridPane.columnIndex="1" GridPane.rowIndex="2">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField  alignment="CENTER" disable="true" style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);" GridPane.columnIndex="2" GridPane.rowIndex="2">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField alignment="CENTER" disable="true" style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);" GridPane.columnIndex="3" GridPane.rowIndex="2">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField  alignment="CENTER" disable="true" style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);" GridPane.columnIndex="4" GridPane.rowIndex="2">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField  alignment="CENTER" disable="true" style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);" GridPane.columnIndex="5" GridPane.rowIndex="2">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
 
-   <!-- FILA 3 -->
-   <TextField fx:id="T30" alignment="CENTER" disable="true"
-              layoutX="83.0" layoutY="260.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T31" alignment="CENTER" disable="true"
-              layoutX="149.0" layoutY="260.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T32" alignment="CENTER" disable="true"
-              layoutX="215.0" layoutY="260.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T33" alignment="CENTER" disable="true"
-              layoutX="283.0" layoutY="260.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T34" alignment="CENTER" disable="true"
-              layoutX="349.0" layoutY="260.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T35" alignment="CENTER" disable="true"
-              layoutX="415.0" layoutY="260.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
+      <!-- ROW 3 -->
+      <TextField alignment="CENTER" disable="true" style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);" GridPane.columnIndex="0" GridPane.rowIndex="3">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField  alignment="CENTER" disable="true" style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);" GridPane.columnIndex="1" GridPane.rowIndex="3">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField  alignment="CENTER" disable="true" style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);" GridPane.columnIndex="2" GridPane.rowIndex="3">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField alignment="CENTER" disable="true" style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);" GridPane.columnIndex="3" GridPane.rowIndex="3">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField  alignment="CENTER" disable="true" style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);" GridPane.columnIndex="4" GridPane.rowIndex="3">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField  alignment="CENTER" disable="true" style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);" GridPane.columnIndex="5" GridPane.rowIndex="3">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
 
-   <!-- FILA 4 -->
-   <TextField fx:id="T40" alignment="CENTER" disable="true"
-              layoutX="83.0" layoutY="312.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T41" alignment="CENTER" disable="true"
-              layoutX="149.0" layoutY="312.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T42" alignment="CENTER" disable="true"
-              layoutX="215.0" layoutY="312.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T43" alignment="CENTER" disable="true"
-              layoutX="283.0" layoutY="312.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T44" alignment="CENTER" disable="true"
-              layoutX="349.0" layoutY="312.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T45" alignment="CENTER" disable="true"
-              layoutX="415.0" layoutY="312.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
+      <!-- ROW 4 -->
+      <TextField  alignment="CENTER" disable="true" style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);" GridPane.columnIndex="0" GridPane.rowIndex="4">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField  alignment="CENTER" disable="true" style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);" GridPane.columnIndex="1" GridPane.rowIndex="4">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField alignment="CENTER" disable="true" style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);" GridPane.columnIndex="2" GridPane.rowIndex="4">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField  alignment="CENTER" disable="true" style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);" GridPane.columnIndex="3" GridPane.rowIndex="4">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField alignment="CENTER" disable="true" style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);" GridPane.columnIndex="4" GridPane.rowIndex="4">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField  alignment="CENTER" disable="true" style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);" GridPane.columnIndex="5" GridPane.rowIndex="4">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
 
-   <!-- FILA 5 -->
-   <TextField fx:id="T50" alignment="CENTER" disable="true"
-              layoutX="83.0" layoutY="364.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T51" alignment="CENTER" disable="true"
-              layoutX="149.0" layoutY="364.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T52" alignment="CENTER" disable="true"
-              layoutX="215.0" layoutY="364.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T53" alignment="CENTER" disable="true"
-              layoutX="283.0" layoutY="364.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T54" alignment="CENTER" disable="true"
-              layoutX="349.0" layoutY="364.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
-   <TextField fx:id="T55" alignment="CENTER" disable="true"
-              layoutX="415.0" layoutY="364.0" prefHeight="48.0" prefWidth="62.0"
-              style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);">
-      <cursor>
-         <Cursor fx:constant="HAND"/>
-      </cursor>
-      <font>
-         <Font size="24.0"/>
-      </font>
-   </TextField>
+      <!-- ROW 5 -->
+      <TextField  alignment="CENTER" disable="true" style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);" GridPane.columnIndex="0" GridPane.rowIndex="5">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField  alignment="CENTER" disable="true" style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);" GridPane.columnIndex="1" GridPane.rowIndex="5">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField  alignment="CENTER" disable="true" style="-fx-background-color: #332b1a; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.35); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 2);" GridPane.columnIndex="2" GridPane.rowIndex="5">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField  alignment="CENTER" disable="true" style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);" GridPane.columnIndex="3" GridPane.rowIndex="5">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField  alignment="CENTER" disable="true" style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);" GridPane.columnIndex="4" GridPane.rowIndex="5">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
+      <TextField alignment="CENTER" disable="true" style="-fx-background-color: #261f10; -fx-background-radius: 4; -fx-border-color: rgba(200,146,58,0.18); -fx-border-width: 1; -fx-border-radius: 4; -fx-text-fill: #f0e6cc; -fx-font-size: 22px; -fx-font-weight: bold; -fx-effect: innershadow(gaussian, rgba(0,0,0,0.50), 6, 0, 0, 2);" GridPane.columnIndex="5" GridPane.rowIndex="5">
+         <cursor><Cursor fx:constant="HAND" /></cursor>
+         <font><Font size="24.0" /></font>
+      </TextField>
 
-   <!-- ══════════════════════════════════════════════════
-        SEPARADOR ornamental entre tablero y zona CTA
-   ═══════════════════════════════════════════════════ -->
-   <Rectangle
-           layoutX="85.0" layoutY="432.0"
-           width="383.0" height="1.0"
-           style="-fx-fill: linear-gradient(to right, transparent, rgba(200,146,58,0.45), transparent);"/>
+   </GridPane>
 
-   <!-- ══════════════════════════════════════════════════
-        LABEL DE ESTADO
-        Nielsen #1: visibilidad del estado del sistema
-        Color muted del mismo ramp ámbar
-   ═══════════════════════════════════════════════════ -->
-   <Label fx:id="labelText"
-          alignment="CENTER"
-          layoutX="85.0" layoutY="440.0"
-          prefHeight="24.0" prefWidth="383.0"
-          style="-fx-text-fill: #8a7355; -fx-font-weight: bold;">
+   <Rectangle height="1.0" layoutX="85.0" layoutY="432.0" style="-fx-fill: linear-gradient(to right, transparent, rgba(200,146,58,0.45), transparent);" width="383.0" />
+
+   <Label fx:id="labelText" alignment="CENTER" layoutX="85.0" layoutY="440.0" prefHeight="24.0" prefWidth="383.0" style="-fx-text-fill: #8a7355; -fx-font-weight: bold;">
       <font>
-         <Font size="16.0"/>
+         <Font size="16.0" />
       </font>
    </Label>
 
-   <!-- ══════════════════════════════════════════════════
-        BOTÓN JUGAR
-        Von Restorff: sólido, brillante, único elemento
-        de acento pleno en toda la pantalla
-        Nielsen #4: consistencia — mismo ámbar del título
-   ═══════════════════════════════════════════════════ -->
-   <Button fx:id="playID"
-           layoutX="85.0" layoutY="474.0"
-           mnemonicParsing="false"
-           onAction="#onButtonPlay"
-           prefHeight="50.0" prefWidth="383.0"
-           text="JUGAR"
-           style="
-         -fx-background-color: linear-gradient(to bottom, #d4a045, #b87a28);
-         -fx-background-radius: 5;
-         -fx-border-color: rgba(255,220,130,0.30);
-         -fx-border-width: 1;
-         -fx-border-radius: 5;
-         -fx-text-fill: #1e1a0f;
-         -fx-font-size: 18px;
-         -fx-font-weight: bold;
-         -fx-effect: dropshadow(gaussian, rgba(180,120,30,0.70), 18, 0.0, 0, 5);
-      ">
+   <Button fx:id="buttonPlay" layoutX="85.0" layoutY="474.0" mnemonicParsing="false" onAction="#onButtonPlay" prefHeight="50.0" prefWidth="383.0" style="          -fx-background-color: linear-gradient(to bottom, #d4a045, #b87a28);          -fx-background-radius: 5;          -fx-border-color: rgba(255,220,130,0.30);          -fx-border-width: 1;          -fx-border-radius: 5;          -fx-text-fill: #1e1a0f;          -fx-font-size: 18px;          -fx-font-weight: bold;          -fx-effect: dropshadow(gaussian, rgba(180,120,30,0.70), 18, 0.0, 0, 5);       " text="JUGAR">
       <font>
-         <Font name="Arial Bold" size="18.0"/>
+         <Font name="Arial Bold" size="18.0" />
       </font>
       <cursor>
-         <Cursor fx:constant="HAND"/>
+         <Cursor fx:constant="HAND" />
       </cursor>
    </Button>
 
-   <!-- ══════════════════════════════════════════════════
-        BOTÓN PISTA
-        Misma familia ámbar apagada — no rompe la paleta
-        Nielsen #4: consistencia visual con JUGAR
-   ═══════════════════════════════════════════════════ -->
-   <Button fx:id="clueID"
-           layoutX="85.0" layoutY="474.0"
-           mnemonicParsing="false"
-           onAction="#onButtonClue"
-           prefHeight="50.0" prefWidth="383.0"
-           text="Pista"
-           visible="false"
-           style="
-         -fx-background-color: #2a2316;
-         -fx-background-radius: 5;
-         -fx-border-color: #c8923a;
-         -fx-border-width: 1.5;
-         -fx-border-radius: 5;
-         -fx-text-fill: #c8923a;
-         -fx-font-size: 18px;
-         -fx-font-weight: bold;
-         -fx-effect: dropshadow(gaussian, rgba(180,120,30,0.35), 10, 0.0, 0, 3);
-      ">
+   <Button fx:id="buttonClue" layoutX="85.0" layoutY="474.0" mnemonicParsing="false" onAction="#onButtonClue" prefHeight="50.0" prefWidth="383.0" style="          -fx-background-color: #2a2316;          -fx-background-radius: 5;          -fx-border-color: #c8923a;          -fx-border-width: 1.5;          -fx-border-radius: 5;          -fx-text-fill: #c8923a;          -fx-font-size: 18px;          -fx-font-weight: bold;          -fx-effect: dropshadow(gaussian, rgba(180,120,30,0.35), 10, 0.0, 0, 3);       " text="Pista" visible="false">
       <font>
-         <Font name="Arial Bold" size="18.0"/>
+         <Font name="Arial Bold" size="18.0" />
       </font>
       <cursor>
-         <Cursor fx:constant="HAND"/>
+         <Cursor fx:constant="HAND" />
       </cursor>
    </Button>
 
