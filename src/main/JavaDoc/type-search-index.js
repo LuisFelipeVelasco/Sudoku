@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html","k":"18"},{"p":"com.examplez.demo","l":"GameLauncher"},{"p":"com.examplez.demo","l":"Launcher"},{"p":"com.examplez.demo.controllers","l":"MainMenuController"},{"p":"com.examplez.demo.models","l":"SudokuGame"},{"p":"com.examplez.demo","l":"SudokuInitializable","k":"10"}];updateSearchResults();
