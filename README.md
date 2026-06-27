@@ -185,12 +185,3 @@ mvn test
 - Using `SudokuInitializable` as a `interface` rather than an abstract class lets both `SudokuGame` (pure model) and `MainMenuController` (JavaFX controller) share the same lifecycle contract without forcing a common superclass — keeping the inheritance hierarchy flat and unambiguous.
 
 ---
-
-## 🚧 Known Limitations & Future Improvements
-
-- The `firstGame` flag prevents duplicate listeners across Play clicks but ties listener lifecycle to instance lifetime; a proper teardown-and-reattach pattern would be cleaner.
-- Board generation uses unguarded random initialization (`ThreadLocalRandom`); adding a seed option would make puzzles reproducible for testing.
-- The clue system scans from cell (0,0) linearly; a smarter strategy could select the empty cell that produces the most instructive reveal for the player.
-- The 6×6 variant is hard-coded via `final int size = 6`; the backtracking solver is general enough to support 9×9 with sub-block dimension parameters, which would make a natural extension.
-- No persistent high score, timer, or difficulty selection — all natural additions for a second iteration.
-- The `SudokuGame` model still holds a direct import of `MainMenuController` (`import com.examplez.demo.controllers.MainMenuController`), creating a circular dependency between layers that should be broken by removing the import.
