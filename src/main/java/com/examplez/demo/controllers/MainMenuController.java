@@ -153,11 +153,11 @@ public class MainMenuController implements SudokuInitializable {
             showClue(rowClue, columnClue);
             String valueClue = cells[rowClue][columnClue].getText();
             List<List<Integer>> repeatedInvalidCells=modelSudoku.getCoordinatesRepeatedInvalidCells(valueClue,columnClue,rowClue,getMatrixValueCells());
-            if(repeatedInvalidCells.isEmpty())labelText.setText("");
-            else{
+            if(!repeatedInvalidCells.isEmpty()){
                 for(List<Integer> c:repeatedInvalidCells){
                     editInterfaceDependingOnInputValidation("Watch out, a number you typed nearby is invalid.", false, cells[c.get(0)][c.get(1)]);
                 }
+                editInterfaceDependingOnInputValidation("Watch out, a number you typed nearby is invalid.", false, cells[rowClue][columnClue]);
             }
         } else {
             labelText.setText("You can't ask for more clues");
@@ -239,7 +239,7 @@ public class MainMenuController implements SudokuInitializable {
      * <li>If the value is not a digit 1–6, show an error message and reset
      * the field to empty.</li>
      * <li>If the digit already appears in the same column, row, or 2×3
-     * sub-block, visually highlight the cell as invalid.</li>
+     * sub-block, visually highlight the cell as invalid and the other invalid cells.</li>
      * <li>Otherwise, accept the value and check whether the board is now
      * fully completed via {@link #editInterfaceSudokuCompleted()}.</li>
      * </ol>
@@ -252,7 +252,7 @@ public class MainMenuController implements SudokuInitializable {
         List<Integer> coordinatesTextField = getCoordinatestextField(textField);
         int rowTextField    = coordinatesTextField.get(0);
         int columnTextField = coordinatesTextField.get(1);
-
+        if(labelText.getText().equals("Start playing")) labelText.setText("");
         if (userInput.isEmpty()&& !labelText.getText().equals("Type a number between 1 and 6")) {
             labelText.setText("");
             modelSudoku.setConfirmedStateOfCell(columnTextField,rowTextField,false);
@@ -271,13 +271,14 @@ public class MainMenuController implements SudokuInitializable {
         }
         else if (!modelSudoku.getConfirmedStateOfCell(columnTextField,rowTextField)) {
 
-            if (modelSudoku.sameNumberInSameColumn(userInput, columnTextField, rowTextField, getMatrixValueCells()) != -1) {
-                editInterfaceDependingOnInputValidation("This number is in the column already", false, textField);
-            } else if (modelSudoku.sameNumberInSameRow(userInput, columnTextField, rowTextField, getMatrixValueCells()) != -1) {
-                editInterfaceDependingOnInputValidation("This number is in the row already", false, textField);
-            } else if (!modelSudoku.sameNumberInSameBlock(userInput, columnTextField, rowTextField, getMatrixValueCells()).isEmpty()) {
-                editInterfaceDependingOnInputValidation("This number is in the block already", false, textField);
-            } else {
+            List<List<Integer>> repeatedInvalidCells=modelSudoku.getCoordinatesRepeatedInvalidCells(userInput,columnTextField,rowTextField,getMatrixValueCells());
+            if(!repeatedInvalidCells.isEmpty()){
+                for(List<Integer> c:repeatedInvalidCells){
+                    editInterfaceDependingOnInputValidation("The number is invalid", false, cells[c.get(0)][c.get(1)]);
+                }
+                editInterfaceDependingOnInputValidation("The number is invalid", false, cells[rowTextField][columnTextField]);
+            }
+            else {
                 modelSudoku.setConfirmedStateOfCell(columnTextField,rowTextField,true);
                 labelText.setText("");
             }

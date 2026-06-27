@@ -237,11 +237,9 @@ public class SudokuGame implements SudokuInitializable {
     private boolean isValidCell(int row, int col, String num,ArrayList<ArrayList<String>> cell) {
         for (int i = 0; i < size; i++) {
             if (Objects.equals(cell.get(row).get(i), num) && i!=col) {
-                System.out.println("hola1");
                 return false;
             } // Row conflict
             if (Objects.equals(cell.get(i).get(col), num)&& i!=row) {
-                System.out.println("hola2");
                 return false;} // Column conflict
         }
 
