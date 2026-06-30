@@ -37,7 +37,7 @@ public class MainMenuController implements SudokuInitializable {
     // -----------------------------------------------------------------------
 
     /** Button that requests a clue from the model. Visible only during a game. */
-    @FXML private Button buttonClue ;
+    @FXML private Button buttonClue;
 
     /** Button that starts a new game. Visible only on the start/end screen. */
     @FXML private Button buttonPlay;
@@ -45,7 +45,7 @@ public class MainMenuController implements SudokuInitializable {
     /** Status label shown below the board (feedback messages to the player). */
     @FXML private Label labelText;
 
-    /** Grid-Pane that store all the text-fields (cells) */
+    /** GridPane that holds all the TextFields (cells) of the board. */
     @FXML private GridPane gridPane;
 
     // -----------------------------------------------------------------------
@@ -53,17 +53,19 @@ public class MainMenuController implements SudokuInitializable {
     // -----------------------------------------------------------------------
 
     /**
-     * Two-dimensional array that mirrors the FXML TextField grid for
+     * Two-dimensional array that mirrors the FXML {@link TextField} grid for
      * programmatic access. Populated during {@link #initialize()}.
      */
     private TextField[][] cells = new TextField[6][6];
 
     /**
-     * Two-dimensional array that stores the initial CSS styles of each
-     * FXML TextField node.
-     * * <p>This prevents colour strings and dynamic highlights from accumulating
-     * across successive validation checks and allows safe restoration of a
-     * block's base appearance.</p>
+     * Two-dimensional array that caches the initial inline CSS style of each
+     * {@link TextField} node as it was set in the FXML file.
+     *
+     * <p>This baseline snapshot prevents dynamic highlight strings (e.g. error
+     * background colours) from accumulating across successive validation checks,
+     * and allows each cell to be safely restored to its original appearance
+     * after a conflict is resolved.</p>
      */
     private String[][] cellsStyle = new String[6][6];
 
@@ -71,23 +73,32 @@ public class MainMenuController implements SudokuInitializable {
     private SudokuGame modelSudoku;
 
     /**
-     * {@code true} while a game is in progress; prevents listener logic
-     * from running before a game has started or after it is completed.
+     * Guards the one-time listener registration in
+     * {@link #setListenerToTextFields()}.
+     *
+     * <p>Set to {@code false} after the first call so that subsequent
+     * invocations of {@link #onButtonPlay()} do not attach duplicate
+     * {@code textProperty} listeners to the same {@link TextField} nodes.</p>
      */
     boolean firstGame = true;
 
     // -----------------------------------------------------------------------
     // JavaFX lifecycle
     // -----------------------------------------------------------------------
+
     /**
      * Called automatically by the JavaFX FXML loader after all
      * {@code @FXML} fields have been injected.
      *
-     * <p>Initializes the {@link #cells} array by mapping the
-     * {@link TextField} nodes contained in the {@link #gridPane}
-     * to their corresponding row and column indices. The method
-     * also stores each cell's initial CSS style in
-     * {@link #cellsStyle} so it can be restored later if needed.</p>
+     * <p>Iterates over the children of {@link #gridPane} in row-major order
+     * and populates the {@link #cells} array so that {@code cells[i][j]}
+     * always refers to the {@link TextField} at row {@code i}, column {@code j}.
+     * The same traversal is then used to snapshot each cell's initial inline
+     * CSS style into {@link #cellsStyle}, enabling later style restoration.</p>
+     *
+     * <p><strong>Note:</strong> this method assumes that the GridPane's
+     * child list is ordered left-to-right, top-to-bottom and contains
+     * exactly 36 {@link TextField} nodes with no other interleaved children.</p>
      */
     public void initialize() {
         ObservableList<Node> textFieldCells = gridPane.getChildren();
@@ -112,10 +123,13 @@ public class MainMenuController implements SudokuInitializable {
     /**
      * Handles the <em>Play</em> button click.
      *
-     * <p>Generates a new fully solved board via {@link SudokuGame#initialize()},
-     * clears the UI grid, renders the initial clues, registers text-change
-     * listeners on every editable cell, and transitions the toolbar to
-     * in-game state (shows the Clue button, hides the Play button).</p>
+     * <p>Resets the board UI via {@link #cleanBoard()}, creates a new
+     * {@link SudokuGame} instance, generates a fully solved board through
+     * {@link SudokuGame#initialize()}, and renders the initial clue cells
+     * with {@link #showBoard(ArrayList)}. Text-change listeners are attached
+     * to every editable cell exactly once (guarded by {@link #firstGame}).
+     * Finally, the toolbar transitions to in-game state: the Clue button
+     * becomes visible and the Play button is hidden.</p>
      */
     @FXML
     private void onButtonPlay() {
@@ -133,15 +147,16 @@ public class MainMenuController implements SudokuInitializable {
     /**
      * Handles the <em>Clue</em> button click.
      *
-     * <p>Asks {@link SudokuGame} for the first empty cell on the board,
-     * marks it as confirmed, and reveals its correct value in the UI.
-     * After revealing the clue, scans the surrounding row, column, and
-     * sub-block for player entries that now conflict with the revealed
-     * value and highlights them as invalid.</p>
+     * <p>Delegates to {@link SudokuGame#isPossibleGiveClue(ArrayList)} to
+     * check whether another clue may be dispensed. If allowed, the first
+     * empty cell is located by {@link SudokuGame#giveClue(ArrayList)}, its
+     * confirmed state is set to {@code true}, and its correct value is revealed
+     * in the UI via {@link #showClue(int, int)}. Any player entries in the
+     * same row, column, or 2×3 sub-block that now conflict with the revealed
+     * value are highlighted as invalid.</p>
      *
-     * <p>If the maximum number of clues has already been reached (35 cells
-     * confirmed), displays an informational message and takes no further
-     * action.</p>
+     * <p>If the model reports that no further clues are available, an
+     * informational message is displayed and no board change is made.</p>
      */
     @FXML
     private void onButtonClue() {
@@ -149,12 +164,12 @@ public class MainMenuController implements SudokuInitializable {
             List<Integer> coordinatesClue = modelSudoku.giveClue(getMatrixValueCells());
             int rowClue = coordinatesClue.get(0);
             int columnClue = coordinatesClue.get(1);
-            modelSudoku.setConfirmedStateOfCell(columnClue,rowClue,true);
+            modelSudoku.setConfirmedStateOfCell(columnClue, rowClue, true);
             showClue(rowClue, columnClue);
             String valueClue = cells[rowClue][columnClue].getText();
-            List<List<Integer>> repeatedInvalidCells=modelSudoku.getCoordinatesRepeatedInvalidCells(valueClue,columnClue,rowClue,getMatrixValueCells());
-            if(!repeatedInvalidCells.isEmpty()){
-                for(List<Integer> c:repeatedInvalidCells){
+            List<List<Integer>> repeatedInvalidCells = modelSudoku.getCoordinatesRepeatedInvalidCells(valueClue, columnClue, rowClue, getMatrixValueCells());
+            if (!repeatedInvalidCells.isEmpty()) {
+                for (List<Integer> c : repeatedInvalidCells) {
                     editInterfaceDependingOnInputValidation("Watch out, a number you typed nearby is invalid.", false, cells[c.get(0)][c.get(1)]);
                 }
                 editInterfaceDependingOnInputValidation("Watch out, a number you typed nearby is invalid.", false, cells[rowClue][columnClue]);
@@ -170,29 +185,28 @@ public class MainMenuController implements SudokuInitializable {
     // -----------------------------------------------------------------------
 
     /**
-     * Renders the initial board state in the UI according to the
-     * {@code matrix} mask.
+     * Renders the initial board state in the UI according to the given
+     * confirmed-cell mask.
      *
-     * <p>For every cell where {@code matrix[row][col]} is {@code true}, the
-     * correct value from the model is displayed and the field is disabled so
-     * the player cannot modify it. All other cells are left blank and
-     * enabled.</p>
+     * <p>For every cell where {@code validCells.get(row).get(col)} is
+     * {@code true}, the correct value from the model is displayed and the
+     * {@link TextField} is disabled so the player cannot modify it.
+     * All other cells are cleared and left enabled for player input.</p>
      *
      * @param validCells a 6×6 boolean mask; {@code true} means the cell is
-     * revealed as a starting clue
+     *                   pre-filled as a starting clue
      */
     private void showBoard(ArrayList<ArrayList<Boolean>> validCells) {
-            for (int row = 0; row < 6; row++) {
-                for (int col = 0; col < 6; col++) {
-                    if (validCells.get(row).get(col)) {
-                        cells[row][col].setText(String.valueOf(modelSudoku.getValue(row, col)));
-                        cells[row][col].setDisable(true);
-                    } else {
-                        cells[row][col].setDisable(false);
-                    }
+        for (int row = 0; row < 6; row++) {
+            for (int col = 0; col < 6; col++) {
+                if (validCells.get(row).get(col)) {
+                    cells[row][col].setText(String.valueOf(modelSudoku.getValue(row, col)));
+                    cells[row][col].setDisable(true);
+                } else {
+                    cells[row][col].setDisable(false);
                 }
             }
-
+        }
     }
 
     /**
@@ -208,13 +222,20 @@ public class MainMenuController implements SudokuInitializable {
     }
 
     /**
-     * Attaches a {@code textProperty} change listener to every editable
-     * {@link TextField} in the board.
-     * * <p>This ensures that {@link #verification(String, String, TextField)}
-     * is executed whenever the cell's text changes, providing live validation feedback.</p>
+     * Attaches a {@code textProperty} change listener to every {@link TextField}
+     * in the board, but only on the very first call.
+     *
+     * <p>The {@link #firstGame} flag ensures listeners are registered exactly
+     * once across multiple game sessions. Without this guard, each subsequent
+     * call to {@link #onButtonPlay()} would stack additional listeners on the
+     * same nodes, causing {@link #verification(String, String, TextField)} to
+     * fire multiple times per keystroke.</p>
+     *
+     * <p>After registering the listeners {@link #firstGame} is set to
+     * {@code false} and remains so for the lifetime of the controller.</p>
      */
     private void setListenerToTextFields() {
-        if(firstGame){
+        if (firstGame) {
             for (int row = 0; row < 6; row++) {
                 for (int col = 0; col < 6; col++) {
                     TextField textField = cells[row][col];
@@ -224,8 +245,7 @@ public class MainMenuController implements SudokuInitializable {
                 }
             }
         }
-        firstGame=false;
-
+        firstGame = false;
     }
 
     /**
@@ -234,14 +254,17 @@ public class MainMenuController implements SudokuInitializable {
      *
      * <p>Validation rules (applied in order):</p>
      * <ol>
-     * <li>If the new value is empty, remove any error highlight from the
-     * this deletion resolves errors in other cells via
-     * <li>If the value is not a digit 1–6, show an error message and reset
-     * the field to empty.</li>
-     * <li>If the digit already appears in the same column, row, or 2×3
-     * sub-block, visually highlight the cell as invalid and the other invalid cells.</li>
-     * <li>Otherwise, accept the value and check whether the board is now
-     * fully completed via {@link #editInterfaceSudokuCompleted()}.</li>
+     *   <li>If {@code userInput} is empty, remove any error highlight from the
+     *       cell, mark it as unconfirmed in the model, and re-validate adjacent
+     *       cells that may have been flagged because of the now-deleted value.</li>
+     *   <li>If the value is not a digit 1–6, display an error message and reset
+     *       the field to empty.</li>
+     *   <li>If the cell is not yet confirmed and the digit already appears in the
+     *       same row, column, or 2×3 sub-block, highlight the conflicting cells
+     *       (including this one) as invalid.</li>
+     *   <li>Otherwise, mark the cell as confirmed in the model, clear the status
+     *       label, and check whether the board is now fully completed via
+     *       {@link #editInterfaceSudokuCompleted()}.</li>
      * </ol>
      *
      * @param userInput    the new text entered by the player
@@ -252,45 +275,40 @@ public class MainMenuController implements SudokuInitializable {
         List<Integer> coordinatesTextField = getCoordinatestextField(textField);
         int rowTextField    = coordinatesTextField.get(0);
         int columnTextField = coordinatesTextField.get(1);
-        if(labelText.getText().equals("Start playing")) labelText.setText("");
-        if (userInput.isEmpty()&& !labelText.getText().equals("Type a number between 1 and 6")) {
+        if (labelText.getText().equals("Start playing")) labelText.setText("");
+        if (userInput.isEmpty() && !labelText.getText().equals("Type a number between 1 and 6")) {
             labelText.setText("");
-            modelSudoku.setConfirmedStateOfCell(columnTextField,rowTextField,false);
+            modelSudoku.setConfirmedStateOfCell(columnTextField, rowTextField, false);
             textField.setStyle(cellsStyle[rowTextField][columnTextField]);
-            List<List<Integer>> repeatedValidCells=modelSudoku.getRepeatedValidCells(oldUserInput, columnTextField, rowTextField, getMatrixValueCells());
-            if(!repeatedValidCells.isEmpty()){
-                for(List<Integer> c:repeatedValidCells){
+            List<List<Integer>> repeatedValidCells = modelSudoku.getRepeatedValidCells(oldUserInput, columnTextField, rowTextField, getMatrixValueCells());
+            if (!repeatedValidCells.isEmpty()) {
+                for (List<Integer> c : repeatedValidCells) {
                     editInterfaceDependingOnInputValidation("", true, cells[c.get(0)][c.get(1)]);
                 }
             }
-        }
-        else if (!modelSudoku.isNumberOneToSix(userInput)) {
+        } else if (!modelSudoku.isNumberOneToSix(userInput)) {
             labelText.setText("Type a number between 1 and 6");
             labelText.setStyle("-fx-text-fill: #8e2115;");
             textField.setText("");
-        }
-        else if (!modelSudoku.getConfirmedStateOfCell(columnTextField,rowTextField)) {
-
-            List<List<Integer>> repeatedInvalidCells=modelSudoku.getCoordinatesRepeatedInvalidCells(userInput,columnTextField,rowTextField,getMatrixValueCells());
-            if(!repeatedInvalidCells.isEmpty()){
-                for(List<Integer> c:repeatedInvalidCells){
+        } else if (!modelSudoku.getConfirmedStateOfCell(columnTextField, rowTextField)) {
+            List<List<Integer>> repeatedInvalidCells = modelSudoku.getCoordinatesRepeatedInvalidCells(userInput, columnTextField, rowTextField, getMatrixValueCells());
+            if (!repeatedInvalidCells.isEmpty()) {
+                for (List<Integer> c : repeatedInvalidCells) {
                     editInterfaceDependingOnInputValidation("The number is invalid", false, cells[c.get(0)][c.get(1)]);
                 }
                 editInterfaceDependingOnInputValidation("The number is invalid", false, cells[rowTextField][columnTextField]);
-            }
-            else {
-                modelSudoku.setConfirmedStateOfCell(columnTextField,rowTextField,true);
+            } else {
+                modelSudoku.setConfirmedStateOfCell(columnTextField, rowTextField, true);
                 labelText.setText("");
             }
         }
         if (modelSudoku.isTheSudokuCompleted()) editInterfaceSudokuCompleted();
     }
 
-
     /**
      * Clears the text of every {@link TextField} in the 6×6 grid.
      *
-     * <p>Called at the beginning of each new game to remove any values left
+     * <p>Called at the start of each new game to remove any values left
      * over from the previous session before the initial clues are rendered.</p>
      */
     private void cleanBoard() {
@@ -300,17 +318,22 @@ public class MainMenuController implements SudokuInitializable {
             }
         }
     }
+
     /**
-     * Modifies the UI to give visual feedback to the player regarding
-     * the validity of their latest input or a clue reveal.
+     * Provides visual feedback to the player about the validity of their
+     * latest input or a clue reveal.
      *
-     * <p>If valid, the status label is updated with a positive color (green).
-     * If invalid, the label changes to an error color (red) and the specific
-     * text field receives a red background highlight indicating a conflict.</p>
+     * <p>When {@code isValidInput} is {@code true}, the status label is
+     * updated in green and the target {@link TextField} is restored to its
+     * original baseline style from {@link #cellsStyle}. When {@code false},
+     * the label switches to red and a red background highlight is appended to
+     * the field's current inline style to indicate a conflict.</p>
      *
-     * @param text         the feedback message to display to the user
-     * @param isValidInput {@code true} if the placement is correct, {@code false} if there is a conflict
-     * @param textField    the {@link TextField} that triggered the validation check
+     * @param text         the feedback message to display in the status label
+     * @param isValidInput {@code true} if the placement is valid and should be
+     *                     un-highlighted; {@code false} if there is a conflict
+     *                     that should be highlighted
+     * @param textField    the {@link TextField} associated with the validated cell
      */
     private void editInterfaceDependingOnInputValidation(String text, boolean isValidInput, TextField textField) {
         if (isValidInput) {
@@ -325,21 +348,21 @@ public class MainMenuController implements SudokuInitializable {
     }
 
     /**
-     * Retrieves the original CSS style string that was cached for a given
+     * Retrieves the baseline CSS style string that was cached for a given
      * {@link TextField} when the controller was first initialized.
      *
      * <p>This allows dynamic highlight styles (e.g. error backgrounds) to be
-     * safely removed and the field restored to its default FXML appearance
-     * without hard-coding style values in the controller logic.</p>
+     * safely removed and the field restored to its original FXML appearance
+     * without hard-coding style values in the controller.</p>
      *
      * @param textField the {@link TextField} whose baseline style is requested
      * @return the original inline CSS style string for the field; an empty
      *         string if the field is not found in the {@link #cells} grid
      */
-    private String getInitialStyleOfTextField(TextField textField){
-        for(int i=0; i<6; i++){
-            for(int j=0; j<6;j++){
-                if(cells[i][j]==textField) return cellsStyle[i][j];
+    private String getInitialStyleOfTextField(TextField textField) {
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                if (cells[i][j] == textField) return cellsStyle[i][j];
             }
         }
         return "";
@@ -349,10 +372,12 @@ public class MainMenuController implements SudokuInitializable {
      * Transitions the application out of the active game state when the board
      * is successfully completed.
      *
-     * <p>It sets a congratulatory status message, disables all text fields to
-     * prevent further edits, swaps the visibility of the control buttons
-     * (hides 'Clue', shows 'Play'), flags the game loop as finished, and
-     * removes the real-time event listeners.</p>
+     * <p>Displays a congratulatory message in green, disables all
+     * {@link TextField} nodes to prevent further edits, and swaps the toolbar
+     * buttons back to their pre-game state (hides the Clue button, shows the
+     * Play button). {@link #firstGame} is intentionally left {@code false} so
+     * that the already-registered listeners are not duplicated on the next
+     * game start.</p>
      */
     private void editInterfaceSudokuCompleted() {
         labelText.setText("You Did it, The sudoku is completed");
@@ -365,25 +390,26 @@ public class MainMenuController implements SudokuInitializable {
         buttonClue.setVisible(false);
         buttonPlay.setVisible(true);
     }
+
     /**
      * Builds a 6×6 string matrix that mirrors the current text content of
      * every {@link TextField} in the UI grid.
      *
-     * <p>Empty cells (those whose text is blank) are represented as {@code "0"}
-     * so that the matrix can be passed directly to {@link SudokuGame} validation
-     * methods, which use {@code "0"} as the sentinel for an unfilled position.</p>
+     * <p>Empty cells are represented as {@code "0"} so that the matrix can be
+     * passed directly to {@link SudokuGame} validation methods, which treat
+     * {@code "0"} as the sentinel value for an unfilled position.</p>
      *
-     * @return a new {@link ArrayList} of rows, each containing six string values
-     *         representing the current player input ({@code "1"}–{@code "6"})
+     * @return a new {@link ArrayList} of rows, each containing six string
+     *         values representing the current player input ({@code "1"}–{@code "6"})
      *         or {@code "0"} for empty cells
      */
-    private ArrayList<ArrayList<String>> getMatrixValueCells(){
+    private ArrayList<ArrayList<String>> getMatrixValueCells() {
         ArrayList<ArrayList<String>> matrixValueCells = new ArrayList<>(6);
         for (int i = 0; i < 6; i++) {
             ArrayList<String> row = new ArrayList<>(6);
             for (int j = 0; j < 6; j++) {
-                String valueCell=cells[i][j].getText();
-                if(valueCell.isEmpty()) row.add("0");
+                String valueCell = cells[i][j].getText();
+                if (valueCell.isEmpty()) row.add("0");
                 else row.add(valueCell);
             }
             matrixValueCells.add(row);
@@ -393,11 +419,13 @@ public class MainMenuController implements SudokuInitializable {
 
     /**
      * Resolves the board coordinates of a given {@link TextField} by scanning
-     * the internal {@link #cells} grid for a reference match.
+     * the {@link #cells} grid for a reference match.
      *
-     * <p>Uses reference equality ({@link Object#equals}) to locate the field.
-     * This is the canonical way to convert a UI event source back into
-     * {@code [row, col]} indices consumable by the model layer.</p>
+     * <p>Uses reference equality ({@code ==}) to locate the field, which is
+     * reliable here because {@link #cells} holds the exact same object
+     * references injected by the FXML loader. This is the canonical way to
+     * convert a UI event source back into {@code [row, col]} indices
+     * consumable by the model layer.</p>
      *
      * @param textField the {@link TextField} whose grid position is needed
      * @return a two-element list {@code [row, col]} with zero-based indices;
@@ -415,16 +443,17 @@ public class MainMenuController implements SudokuInitializable {
             }
         }
         return coordinates;
-
-
     }
 
     /**
      * Prints the given 6×6 string matrix to standard output for debugging.
      *
-     * <p>Renders horizontal dividers between every pair of rows and a vertical
-     * pipe ({@code |}) separator between every group of three columns, matching
-     * the visual layout of the 2×3 sub-blocks used in this Sudoku variant.</p>
+     * <p>A horizontal divider is printed before every third row (i.e. before
+     * row 2 and row 4) to visually separate the three horizontal bands of
+     * 2×3 sub-blocks. A vertical pipe ({@code |}) is inserted before every
+     * third column (i.e. before column 3) to mark the boundary between the
+     * two column groups, reproducing the block structure of this Sudoku
+     * variant.</p>
      *
      * @param matrix a 6×6 string matrix to display; values are expected to be
      *               digit characters ({@code "1"}–{@code "6"}) or {@code "0"}
