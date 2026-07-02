@@ -47,7 +47,7 @@ The project follows a strict Model–View–Controller split enforced by JavaFX'
 
 1. **Generates a valid 6×6 board** by running randomized backtracking inside `SudokuGame.initialize()`.
 2. **Selects starting clues** — one random cell per 2×3 sub-block — and marks them as locked in the `confirmedCells` mask.
-3. **Renders the board** in `MainMenuController`, populating the `TextField[6][6]` grid from the model and disabling locked cells.
+3. **Renders the board** in `MainMenuController`, populating the `ArrayList<ArrayList<TextField>>` grid from the model and disabling locked cells.
 4. **Validates input live** by attaching a `textProperty` listener to every editable cell; each keystroke checks row, column, and sub-block constraints and highlights conflicts immediately.
 5. **Dispenses clues on demand** — the Clue button asks the model for the first empty cell, reveals its correct value, and re-checks surrounding cells for newly created conflicts.
 6. **Detects completion** by querying `SudokuGame.isTheSudokuCompleted()` after every valid entry.
@@ -117,7 +117,7 @@ When the player clicks **Clue**, the controller calls `SudokuGame.giveClue()`, w
 
 ### Style Preservation
 
-Each `TextField`'s original CSS style string is cached in `cellsStyle[row][col]` during `initialize()`. This snapshot is restored before any highlight is applied, preventing color strings from accumulating across successive validation passes.
+Each `TextField`'s original CSS style string is cached in `cellsStyle.get(row).get(col)` during `initialize()`. This snapshot is restored before any highlight is applied, preventing color strings from accumulating across successive validation passes.
 
 ### Lifecycle Guard (`firstGame` / `lockedCells`)
 
@@ -183,5 +183,8 @@ mvn test
 
 **Interface vs Abstract Class**
 - Using `SudokuInitializable` as a `interface` rather than an abstract class lets both `SudokuGame` (pure model) and `MainMenuController` (JavaFX controller) share the same lifecycle contract without forcing a common superclass — keeping the inheritance hierarchy flat and unambiguous.
+
+**ArrayList vs Array for the Cell Grid**
+- Replacing the raw `TextField[][]` and `String[][]` arrays with `ArrayList<ArrayList<TextField>>` and `ArrayList<ArrayList<String>>` aligns the cell grid with the rest of the project's collection types, avoids manual size tracking, and makes the grid initialization explicit: each row is built incrementally with `add()` inside `initialize()` before being appended to the outer list.
 
 ---
