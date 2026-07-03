@@ -210,7 +210,7 @@
       </font>
    </Label>
 
-   <Button fx:id="buttonPlay" layoutX="85.0" layoutY="474.0" mnemonicParsing="false" onAction="#onButtonPlay" prefHeight="50.0" prefWidth="383.0" style="          -fx-background-color: linear-gradient(to bottom, #d4a045, #b87a28);          -fx-background-radius: 5;          -fx-border-color: rgba(255,220,130,0.30);          -fx-border-width: 1;          -fx-border-radius: 5;          -fx-text-fill: #1e1a0f;          -fx-font-size: 18px;          -fx-font-weight: bold;          -fx-effect: dropshadow(gaussian, rgba(180,120,30,0.70), 18, 0.0, 0, 5);       " text="JUGAR">
+   <Button fx:id="buttonPlay" layoutX="85.0" layoutY="474.0" mnemonicParsing="false" onAction="#onButtonPlay" prefHeight="50.0" prefWidth="383.0" style="          -fx-background-color: linear-gradient(to bottom, #d4a045, #b87a28);          -fx-background-radius: 5;          -fx-border-color: rgba(255,220,130,0.30);          -fx-border-width: 1;          -fx-border-radius: 5;          -fx-text-fill: #1e1a0f;          -fx-font-size: 18px;          -fx-font-weight: bold;          -fx-effect: dropshadow(gaussian, rgba(180,120,30,0.70), 18, 0.0, 0, 5);       " text="PLAY">
       <font>
          <Font name="Arial Bold" size="18.0" />
       </font>
@@ -219,7 +219,7 @@
       </cursor>
    </Button>
 
-   <Button fx:id="buttonClue" layoutX="85.0" layoutY="474.0" mnemonicParsing="false" onAction="#onButtonClue" prefHeight="50.0" prefWidth="383.0" style="          -fx-background-color: #2a2316;          -fx-background-radius: 5;          -fx-border-color: #c8923a;          -fx-border-width: 1.5;          -fx-border-radius: 5;          -fx-text-fill: #c8923a;          -fx-font-size: 18px;          -fx-font-weight: bold;          -fx-effect: dropshadow(gaussian, rgba(180,120,30,0.35), 10, 0.0, 0, 3);       " text="Pista" visible="false">
+   <Button fx:id="buttonClue" layoutX="85.0" layoutY="474.0" mnemonicParsing="false" onAction="#onButtonClue" prefHeight="50.0" prefWidth="383.0" style="          -fx-background-color: #2a2316;          -fx-background-radius: 5;          -fx-border-color: #c8923a;          -fx-border-width: 1.5;          -fx-border-radius: 5;          -fx-text-fill: #c8923a;          -fx-font-size: 18px;          -fx-font-weight: bold;          -fx-effect: dropshadow(gaussian, rgba(180,120,30,0.35), 10, 0.0, 0, 3);       " text="CLUE" visible="false">
       <font>
          <Font name="Arial Bold" size="18.0" />
       </font>
