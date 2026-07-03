@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import com.examplez.demo.models.SudokuGame;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.GridPane;
 
 import java.util.ArrayList;
@@ -74,7 +75,7 @@ public class MainMenuController implements SudokuInitializable {
 
     /**
      * Guards the one-time listener registration in
-     * {@link #setListenerToTextFields()}.
+     * {@link #configureTextFields()} ()}.
      *
      * <p>Set to {@code false} after the first call so that subsequent
      * invocations of {@link #onButtonPlay()} do not attach duplicate
@@ -130,14 +131,22 @@ public class MainMenuController implements SudokuInitializable {
     /**
      * Handles the <em>Play</em> button click.
      *
-     * <p>Resets the board UI via {@link #cleanBoard()}, creates a new
-     * {@link SudokuGame} instance, generates a fully solved board through
-     * {@link SudokuGame#initialize()}, and renders the initial clue cells
-     * with {@link #showBoard()}. Text-change listeners are attached
-     * to every editable cell exactly once (guarded by {@link #firstGame}).
-     * Finally, the toolbar transitions to in-game state: the Clue button
-     * becomes visible and the Play button is hidden.</p>
+     * <p>This method prepares a new game session by first resetting the board UI
+     * through {@link #cleanBoard()}. Then, it creates a new {@link SudokuGame}
+     * instance, initializes the solved board with {@link SudokuGame#initialize()},
+     * and displays the starting clue cells using {@link #showBoard()}.</p>
+     *
+     * <p>It also calls {@link #configureTextFields()}, which configures each
+     * {@link TextField} only once during the lifetime of the controller. That
+     * configuration includes limiting each field to a single character with a
+     * {@link javafx.scene.control.TextFormatter} and attaching the text-change
+     * listeners used to validate the player's input.</p>
+     *
+     * <p>Finally, the interface is moved into the in-game state: the Clue button
+     * becomes visible, the Play button is hidden, and the status label is updated
+     * to indicate that the game has started.</p>
      */
+
     @FXML
     private void onButtonPlay() {
         cleanBoard();
@@ -146,7 +155,7 @@ public class MainMenuController implements SudokuInitializable {
         labelText.setStyle("-fx-text-fill: #278438;");
         modelSudoku.initialize();
         showBoard();
-        setListenerToTextFields();
+        configureTextFields();
         buttonClue.setVisible(true);
         buttonPlay.setVisible(false);
     }
@@ -226,31 +235,55 @@ public class MainMenuController implements SudokuInitializable {
     }
 
     /**
-     * Attaches a {@code textProperty} change listener to every {@link TextField}
-     * in the board, but only on the very first call.
+     * Configures every {@link TextField} in the board only on the first call.
      *
-     * <p>The {@link #firstGame} flag ensures listeners are registered exactly
-     * once across multiple game sessions. Without this guard, each subsequent
-     * call to {@link #onButtonPlay()} would stack additional listeners on the
-     * same nodes, causing {@link #verification(String, String, TextField)} to
-     * fire multiple times per keystroke.</p>
+     * <p>This method assigns a {@link TextFormatter} to each text field to limit
+     * the input to a single character. Any change that would make the field contain
+     * more than one character is rejected.</p>
      *
-     * <p>After registering the listeners {@link #firstGame} is set to
-     * {@code false} and remains so for the lifetime of the controller.</p>
+     * <p>It also attaches a {@code textProperty} change listener to each field.
+     * The listener calls {@link #verification(String, String, TextField)} every time
+     * the text changes, passing the new value, the old value, and the text field
+     * where the change occurred.</p>
+     *
+     * <p>The {@link #firstGame} flag ensures that formatters and listeners are
+     * registered exactly once during the lifetime of the controller. Without this
+     * guard, each subsequent call to {@link #onButtonPlay()} could stack additional
+     * listeners on the same nodes, causing the verification logic to run multiple
+     * times for a single keystroke.</p>
+     *
+     * <p>After the first configuration, {@link #firstGame} is set to {@code false},
+     * preventing the same text fields from being configured again in later game
+     * sessions.</p>
      */
-    private void setListenerToTextFields() {
-        if (firstGame) {
+
+    private void configureTextFields(){
+        if(firstGame){
             for (int row = 0; row < 6; row++) {
                 for (int col = 0; col < 6; col++) {
                     TextField textField = cells.get(row).get(col);
+
+                    textField.setTextFormatter(new TextFormatter<String>(change -> {
+                        if (change.getControlNewText().length()<=1){
+                            return change;
+                        }
+                        labelText.setText("you can´t write more then 1 number");
+                        return null;
+                    }));
+
                     textField.textProperty().addListener((observable, oldValue, newValue) -> {
                         verification(newValue, oldValue, textField);
                     });
+
                 }
             }
         }
-        firstGame = false;
+
+        firstGame=false;
     }
+
+
+
 
     /**
      * Validates a player's input whenever the text of a {@link TextField}
@@ -290,7 +323,8 @@ public class MainMenuController implements SudokuInitializable {
                     editInterfaceDependingOnInputValidation("", true, cells.get(c.get(0)).get(c.get(1)));
                 }
             }
-        } else if (!modelSudoku.isNumberOneToSix(userInput)) {
+        } else if (!modelSudoku.isNumberOneToSix(textField.getText())) {
+            System.out.println("here");
             labelText.setText("Type a number between 1 and 6");
             labelText.setStyle("-fx-text-fill: #8e2115;");
             textField.setText("");
