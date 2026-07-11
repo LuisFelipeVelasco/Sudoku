@@ -3,6 +3,7 @@
 > **A fully playable 6×6 Sudoku puzzle built with JavaFX and pure Java — featuring real-time input validation, a backtracking board generator, a one-character input formatter, and a clue system, all wired together through a clean MVC architecture.**
 
 ---
+https://github.com/user-attachments/assets/1dde1009-0008-4d2d-be39-3464d8360f8d
 
 ## 🎯 Purpose
 
