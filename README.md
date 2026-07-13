@@ -35,6 +35,7 @@ demo/
 ├── src/main/resources/com/examplez/demo/
 │   └── main-menu-view.fxml                    # 🖌️ Board layout and controls
 │
+└── JavaDoc/                                   # 📄 Documentation
 └── pom.xml                                    # 🔧 Maven build — JavaFX 21, Java 17
 ```
 
