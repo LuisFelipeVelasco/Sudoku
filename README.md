@@ -1,11 +1,11 @@
-# 🎲 6×6 Sudoku Game — JavaFX
+#  6×6 Sudoku Game — JavaFX
 
 > **A fully playable 6×6 Sudoku puzzle built with JavaFX and pure Java — featuring real-time input validation, a backtracking board generator, a one-character input formatter, and a clue system, all wired together through a clean MVC architecture.**
 
 ---
 https://github.com/user-attachments/assets/1dde1009-0008-4d2d-be39-3464d8360f8d
 
-## 🎯 Purpose
+## Purpose
 
 Classic Sudoku engines are a rich ground for applying core OOP patterns: how do you separate game logic from presentation, enforce constraints in real time without coupling the model to the UI, and design a lifecycle that a framework's loader can drive? This project tackles those questions in a 6×6 variant:
 
@@ -16,32 +16,32 @@ Both components share the same lifecycle contract: they implement the `SudokuIni
 
 ---
 
-## 🗂️ Project Structure
+##  Project Structure
 
 ```text
 demo/
 │
 ├── src/main/java/com/examplez/demo/
-│   ├── Launcher.java                          # 🚀 Application entry point
-│   ├── GameLauncher.java                      # 🪟 JavaFX Application subclass
-│   ├── SudokuInitializable.java               # 📐 Shared lifecycle interface
+│   ├── Launcher.java                          # Application entry point
+│   ├── GameLauncher.java                      # JavaFX Application subclass
+│   ├── SudokuInitializable.java               # Shared lifecycle interface
 │   │
 │   ├── controllers/
-│   │   └── MainMenuController.java            # 🎮 FXML controller — UI & validation
+│   │   └── MainMenuController.java            # FXML controller — UI & validation
 │   │
 │   └── models/
-│       └── SudokuGame.java                    # 🧠 Game logic — generation & rules
+│       └── SudokuGame.java                    # Game logic — generation & rules
 │
 ├── src/main/resources/com/examplez/demo/
-│   └── main-menu-view.fxml                    # 🖌️ Board layout and controls
+│   └── main-menu-view.fxml                    #  Board layout and controls
 │
-└── JavaDoc/                                   # 📄 Documentation
-└── pom.xml                                    # 🔧 Maven build — JavaFX 21, Java 17
+└── JavaDoc/                                   #  Documentation
+└── pom.xml                                    #  Maven build — JavaFX 21, Java 17
 ```
 
 ---
 
-## 🧠 Architecture — MVC Design
+##  Architecture — MVC Design
 
 ### What It Does
 
@@ -55,7 +55,7 @@ The project follows a strict Model–View–Controller split enforced by JavaFX'
 6. **Dispenses clues on demand** — the Clue button asks the model for the first empty cell, reveals its correct value, and re-checks surrounding cells for newly created conflicts.
 7. **Detects completion** by querying `SudokuGame.isTheSudokuCompleted()` after every valid entry.
 
-### 🧩 Algorithms & Design Decisions
+###  Algorithms & Design Decisions
 
 #### Board Generation — Randomized Backtracking
 
@@ -120,7 +120,7 @@ User clicks Play
 
 ---
 
-## 🎮 Features
+##  Features
 
 ### Clue System
 
@@ -152,7 +152,7 @@ This guard prevents duplicate listeners from stacking across multiple Play click
 
 ---
 
-## ⚙️ Setup
+##  Setup
 
 ### Prerequisites
 
@@ -182,7 +182,7 @@ mvn test
 
 ---
 
-## 📚 Learnings
+## Learnings
 
 **MVC with JavaFX FXML**
 - The FXML loader instantiates the controller and injects `@FXML` fields before handing control to `initialize()`. This means any setup that references injected nodes must happen there — not in a constructor.
