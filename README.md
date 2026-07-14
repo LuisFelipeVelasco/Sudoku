@@ -139,19 +139,6 @@ Input configuration is performed only once through `configureTextFields()`, guar
 
 This guard prevents duplicate listeners from stacking across multiple Play clicks within the same controller session. Without it, each new game could register additional listeners on the same nodes, causing `verification(...)` to run multiple times for a single keystroke.
 
----
-
-## 🛠️ Technologies & Libraries
-
-| Library / Tool | Role |
-|---|---|
-| `JavaFX 21` (`javafx-controls`, `javafx-fxml`) | UI framework — scene graph, FXML loading, event handling |
-| `Java 17` | Language baseline — records, pattern matching, module system |
-| `Maven` + `javafx-maven-plugin 0.0.8` | Build tool and JavaFX runner (`mvn clean javafx:run`) |
-| `JUnit Jupiter 5.12.1` | Unit testing, test scope |
-
----
-
 ##  Setup
 
 ### Prerequisites
