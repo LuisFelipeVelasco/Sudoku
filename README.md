@@ -174,13 +174,6 @@ mvn clean javafx:run
 
 The game window opens at a fixed **550×560 px** viewport. No additional configuration is required.
 
-### 3. Run tests
-
-```bash
-mvn test
-```
-
----
 
 ## Learnings
 
